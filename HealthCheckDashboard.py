@@ -3,6 +3,7 @@ from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 
 from util.dash.tabs.column_health_check import content_column_health_check, _update_output_column_health_check
+from util.dash.tabs.data_augmentation_quality import content_data_augmentation_quality
 from util.dash.tabs.table_health_check import content_table_health_check, _update_output_table_health_check
 
 external_stylesheets = [
@@ -23,7 +24,8 @@ app.layout = html.Div([
     html.H1('New York Parking Violations: Data Health Check'),
     dcc.Tabs(id="tabs-input", value='tab-column-health-check', children=[
         dcc.Tab(label='Table Health Check', value='tab-table-health-check'),
-        dcc.Tab(label='Column Health Check', value='tab-column-health-check')
+        dcc.Tab(label='Column Health Check', value='tab-column-health-check'),
+        dcc.Tab(label='Data Augmentation Quality', value='tab-data-augmentation-quality')
     ]),
     html.Div(id='tab-content')
 ])
@@ -36,6 +38,8 @@ def render_content(tab_name: str):
         return content_table_health_check()
     elif tab_name == 'tab-column-health-check':
         return content_column_health_check()
+    elif tab_name == 'tab-data-augmentation-quality':
+        return content_data_augmentation_quality()
 
 
 @app.callback(
