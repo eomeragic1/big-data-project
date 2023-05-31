@@ -1,13 +1,15 @@
 import dask.dataframe as dd
 
-from util.data.legally_operating_business import \
+from util.custom.event import TABLE_NAME_EVENT, DTYPES_EVENT, INCLUDED_COLUMNS_EVENT
+from util.custom.legally_operating_business import \
     DTYPES_LEGALLY_OPERATING_BUSINESS, \
     TABLE_NAME_LEGALLY_OPERATING_BUSINESS, \
     INCLUDED_COLUMNS_LEGALLY_OPERATING_BUSINESS
-from util.data.parking_violation_issued import \
+from util.custom.parking_violation_issued import \
     DTYPES_PARKING_VIOLATION_ISSUED, \
     TABLE_NAME_PARKING_VIOLATION_ISSUED, \
     INCLUDED_COLUMNS_PARKING_VIOLATION_ISSUED
+from util.custom.weather import TABLE_NAME_WEATHER, DTYPES_WEATHER, INCLUDED_COLUMNS_WEATHER
 
 DTYPES_VIOLATION_CODE = {
     'Violation County Code': 'str',
@@ -15,7 +17,7 @@ DTYPES_VIOLATION_CODE = {
     'Violation County File Name Suffix': 'str'
 }
 
-DATA_FOLDER = 'data/csv'
+DATA_FOLDER = 'custom/csv'
 
 DATA_METADATA = {
     TABLE_NAME_LEGALLY_OPERATING_BUSINESS: {
@@ -24,7 +26,7 @@ DATA_METADATA = {
         'columns': list(DTYPES_LEGALLY_OPERATING_BUSINESS.keys()),
         'default_column': list(DTYPES_LEGALLY_OPERATING_BUSINESS.keys())[0],
         'included_columns': INCLUDED_COLUMNS_LEGALLY_OPERATING_BUSINESS,
-        'identifier_column': 'DCA License Number',
+        'identifier_columns': ['DCA License Number', 'License Creation Date'],
         'date_column': 'License Creation Date'
     },
     TABLE_NAME_PARKING_VIOLATION_ISSUED: {
@@ -33,8 +35,29 @@ DATA_METADATA = {
         'columns': list(DTYPES_PARKING_VIOLATION_ISSUED.keys()),
         'default_column': list(DTYPES_PARKING_VIOLATION_ISSUED.keys())[0],
         'included_columns': INCLUDED_COLUMNS_PARKING_VIOLATION_ISSUED,
-        'identifier_column': 'Summons Number',
+        'identifier_columns': ['Summons Number', 'Issue Date'],
         'date_column': 'Issue Date'
+    },
+    TABLE_NAME_WEATHER: {
+        'filepath': f'{DATA_FOLDER}/{TABLE_NAME_WEATHER}',
+        'dtypes': DTYPES_WEATHER,
+        'columns': list(DTYPES_WEATHER.keys()),
+        'default_column': list(DTYPES_WEATHER.keys())[0],
+        'included_columns': INCLUDED_COLUMNS_WEATHER,
+        'identifier_columns': ['Time', 'Borough'],
+        'date_column': 'Time'
+    },
+    TABLE_NAME_EVENT: {
+        'filepath': f'{DATA_FOLDER}/{TABLE_NAME_EVENT}',
+        'dtypes': DTYPES_EVENT,
+        'columns': list(DTYPES_EVENT.keys()),
+        'default_column': list(DTYPES_EVENT.keys())[0],
+        'included_columns': INCLUDED_COLUMNS_EVENT,
+        'identifier_columns': ['event_id'],
+        'date_column': 'date'
+    },
+    'VIOLATION_COUNTY': {
+        'filepath': f'{DATA_FOLDER}/VIOLATION_COUNTY.csv',
     }
 }
 

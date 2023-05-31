@@ -3,13 +3,15 @@ import tracemalloc
 
 from box import Box
 
-from util.data.common import read_parquet_table, get_client
+from util.custom.common import read_parquet_table, get_client
 from util.etl.load import load
 from util.etl.transform import extract_transform, augment
 
 LIST_TABLE_NAME = [
-    'LEGALLY_OPERATING_BUSINESS',
-    'PARKING_VIOLATION_ISSUED'
+    # 'LEGALLY_OPERATING_BUSINESS',
+    # 'PARKING_VIOLATION_ISSUED',
+    'WEATHER',
+    'EVENT'
 ]
 
 
@@ -18,10 +20,10 @@ def etl_single_table_transformations(list_table_name: list):
         tracemalloc.start()
         start_time = time.time()
 
-        # Extract and transform data
+        # Extract and transform custom
         transformed_data = extract_transform(table_name=table_name)
 
-        # Load data to HDF5 and Parquet
+        # Load custom to HDF5 and Parquet
         load(data=transformed_data,
              table_name=table_name)
 
@@ -61,8 +63,8 @@ if __name__ == '__main__':
     #   - connects to SLURM if configuration is set to 'hpc'
     client = get_client(config=config)
 
-    # etl_single_table_transformations(list_table_name=LIST_TABLE_NAME)
+    etl_single_table_transformations(list_table_name=LIST_TABLE_NAME)
 
-    etl_augmentation(list_table_name=list(filter(lambda x: x != 'PARKING_VIOLATION_ISSUED', LIST_TABLE_NAME)))
+    # etl_augmentation(list_table_name=list(filter(lambda x: x != 'PARKING_VIOLATION_ISSUED', LIST_TABLE_NAME)))
 
     client.close()

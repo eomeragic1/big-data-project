@@ -8,8 +8,8 @@ import numpy as np
 import datetime
 import dask.dataframe as dd
 
-from util.data.common import read_parquet_table
-from util.data.parking_violation_issued import TABLE_NAME_PARKING_VIOLATION_ISSUED
+from util.custom.common import read_parquet_table
+from util.custom.parking_violation_issued import TABLE_NAME_PARKING_VIOLATION_ISSUED
 
 
 def content_analysis():

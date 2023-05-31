@@ -5,7 +5,7 @@ from dask.distributed import Client
 
 
 def read_parquet_table(table_name: str,
-                       data_path: str = 'data/parquet',
+                       data_path: str = 'custom/parquet',
                        content_root_path: str = '..'):
     return dd.read_parquet(f'{content_root_path}/{data_path}/{table_name}.parquet')
 

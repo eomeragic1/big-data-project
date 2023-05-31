@@ -21,7 +21,7 @@ if __name__ == '__main__':
     files = os.listdir('../data/Parking_Violations_Issued_-_Fiscal_Year_2023.parquet')
     codes = pd.read_csv('../data/fine_codes.csv', index_col=False)
     for file in files:
-        data = pd.read_parquet('../data/Parking_Violations_Issued_-_Fiscal_Year_2023.parquet' + '/' + file)
+        data = pd.read_parquet('../custom/Parking_Violations_Issued_-_Fiscal_Year_2023.parquet' + '/' + file)
         data['Violation Code'] = data['Violation Code'].astype('int64')
         codes['Violation Code'] = codes['Violation Code'].astype('int64')
         data = data.join(codes.set_index('Violation Code'), on='Violation Code', how="left", lsuffix='_left',

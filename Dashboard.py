@@ -3,7 +3,6 @@ from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 
 from util.dash.tabs.analysis import content_analysis, _update_output_analysis_graph
-from util.dash.tabs.column_health_check import content_column_health_check, _update_output_column_health_check
 from util.dash.tabs.data_augmentation_quality import content_data_augmentation_quality
 from util.dash.tabs.table_health_check import content_table_health_check, _update_output_table_health_check
 
@@ -22,11 +21,10 @@ app = Dash(__name__,
            suppress_callback_exceptions=True)
 
 app.layout = html.Div([
-    html.H1('New York Parking Violations: Data Health Check'),
-    dcc.Tabs(id="tabs-input", value='tab-column-health-check', children=[
+    html.H1('New York Parking Violations: Dashboard'),
+    dcc.Tabs(id="tabs-input", value='tab-table-health-check', children=[
         dcc.Tab(label='Table Health Check', value='tab-table-health-check'),
-        dcc.Tab(label='Column Health Check', value='tab-column-health-check'),
-        dcc.Tab(label='Data Augmentation Quality', value='tab-data-augmentation-quality'),
+        dcc.Tab(label='Data Augmentation Quality', value='tab-custom-augmentation-quality'),
         dcc.Tab(label='Analysis', value='tab-analysis'),
     ]),
     html.Div(id='tab-content')
@@ -38,9 +36,7 @@ app.layout = html.Div([
 def render_content(tab_name: str):
     if tab_name == 'tab-table-health-check':
         return content_table_health_check()
-    elif tab_name == 'tab-column-health-check':
-        return content_column_health_check()
-    elif tab_name == 'tab-data-augmentation-quality':
+    elif tab_name == 'tab-custom-augmentation-quality':
         return content_data_augmentation_quality()
     elif tab_name == 'tab-analysis':
         return content_analysis()
@@ -53,16 +49,6 @@ def render_content(tab_name: str):
 def update_output_table_health_check(table_name: str):
     return _update_output_table_health_check(table_name=table_name)
 
-
-@app.callback(
-    Output('output-column-health-check', 'children'),
-    Input('dropdown-column-table', 'value'),
-    Input('dropdown-column', 'value')
-)
-def update_output_column_health_check(table_name: str,
-                                      column_name: str):
-    return _update_output_column_health_check(table_name=table_name,
-                                              column_name=column_name)
 
 @app.callback(
     Output('output-analysis-graphs', 'children'),

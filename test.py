@@ -2,7 +2,7 @@ import pandas as pd
 from box import Box
 from sodapy import Socrata
 
-DATA_FOLDER = 'data/csv'
+DATA_FOLDER = 'custom/csv'
 DATA_FILEPATH_LEGALLY_OPERATING_BUSINESSES = f'{DATA_FOLDER}/LEGALLY_OPERATING_BUSINESS.csv'
 
 config = Box.from_yaml(filename='config/config.yaml')
