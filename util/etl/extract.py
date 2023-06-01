@@ -9,6 +9,8 @@ from util.custom.parking_violation_issued import \
     DTYPES_PARKING_VIOLATION_ISSUED, \
     TABLE_NAME_PARKING_VIOLATION_ISSUED, \
     INCLUDED_COLUMNS_PARKING_VIOLATION_ISSUED
+from util.custom.registered_vehicles import TABLE_NAME_REGISTERED_VEHICLES, DTYPES_REGISTERED_VEHICLES, \
+    INCLUDED_COLUMNS_REGISTERED_VEHICLES
 from util.custom.weather import TABLE_NAME_WEATHER, DTYPES_WEATHER, INCLUDED_COLUMNS_WEATHER
 
 DTYPES_VIOLATION_CODE = {
@@ -58,6 +60,15 @@ DATA_METADATA = {
     },
     'VIOLATION_COUNTY': {
         'filepath': f'{DATA_FOLDER}/VIOLATION_COUNTY.csv',
+    },
+    TABLE_NAME_REGISTERED_VEHICLES: {
+        'filepath': f'{DATA_FOLDER}/{TABLE_NAME_REGISTERED_VEHICLES}',
+        'dtypes': DTYPES_REGISTERED_VEHICLES,
+        'columns': list(DTYPES_REGISTERED_VEHICLES.keys()),
+        'default_column': list(DTYPES_REGISTERED_VEHICLES.keys())[1],
+        'included_columns': INCLUDED_COLUMNS_REGISTERED_VEHICLES,
+        'identifier_columns': ['VIN'],
+        'date_column': None
     }
 }
 

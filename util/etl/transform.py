@@ -58,6 +58,15 @@ def transform_W(data_W: dd.DataFrame) -> dd.DataFrame:
 
     return data_W
 
+def transform_RV(data_RV: dd.DataFrame) -> dd.DataFrame:
+     transformed_data_RV = data_RV
+     transformed_data_RV = transformed_data_RV.loc[(transformed_data_RV['Record Type'] == 'VEH') | (transformed_data_RV['Record Type'] == 'TRL'), :]
+     transformed_data_RV['Reg Expiration Date'] = dd.to_datetime(transformed_data_RV['date'],
+                                                 format='%m/%d/%Y')
+     transformed_data_RV['Reg Valid Date'] = dd.to_datetime(transformed_data_RV['date'],
+                                                                 format='%m/%d/%Y')
+     transformed_data_RV = transformed_data_RV.loc[transformed_data_RV['Reg Expiration Date'] > datetime.datetime(2022, 6, 1), :]
+     return transformed_data_RV
 
 def augment(data: dd.DataFrame,
             joining_data: dd.DataFrame,
@@ -97,6 +106,8 @@ def extract_transform(table_name: str):
         transformed_data = transform_W(data_W=data)
     elif table_name == 'EVENT':
         transformed_data = transform_E(data_E=data)
+    elif table_name == 'REGISTERED_VEHICLES':
+        transformed_data = transform_RV(data_RV=data)
     else:
         raise RuntimeError('Unknown dataset.')
 
