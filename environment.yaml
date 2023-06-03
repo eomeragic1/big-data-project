@@ -41,7 +41,6 @@ dependencies:
   - jupyterlab_server=2.19.0
   - jupyterlab_widgets=3.0.5
   - lerc=3.0
-  - libclang=12.0.0
   - libdeflate=1.17
   - libffi=3.4.2
   - libiconv=1.16
@@ -79,7 +78,6 @@ dependencies:
   - python=3.8.16
   - python-dateutil=2.8.2
   - python-fastjsonschema=2.16.2
-  - pywinpty=2.0.10
   - qt-main=5.15.2
   - qt-webengine=5.15.9
   - qtconsole=5.4.0
@@ -98,13 +96,8 @@ dependencies:
   - tomli=2.0.1
   - tornado=6.2
   - typing_extensions=4.4.0
-  - vc=14.2
-  - vs2015_runtime=14.27.29016
   - wheel=0.38.4
   - widgetsnbextension=4.0.5
-  - win_inet_pton=1.1.0
-  - wincertstore=0.2
-  - winpty=0.4.3
   - xz=5.2.10
   - zeromq=4.3.4
   - zlib=1.2.13
@@ -192,7 +185,6 @@ dependencies:
       - python-box==7.0.1
       - python-json-logger==2.0.7
       - pytz==2022.7.1
-      - pywin32==305
       - pyyaml==6.0
       - pyzmq==25.0.1
       - rfc3339-validator==0.1.4
