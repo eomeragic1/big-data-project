@@ -4,8 +4,8 @@ from scp import SCPClient
 
 if __name__ == '__main__':
     # Read configuration files
-    secrets = Box.from_yaml(filename='../../config/secrets.yaml')
-    config = Box.from_yaml(filename='../../config/config.yaml')
+    secrets = Box.from_yaml(filename='config/secrets.yaml')
+    config = Box.from_yaml(filename='config/config.yaml')
 
     ssh = SSHClient()
     ssh.load_system_host_keys()
