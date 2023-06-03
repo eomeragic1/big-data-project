@@ -21,11 +21,9 @@ DTYPES_VIOLATION_CODE = {
     'Violation County File Name Suffix': 'str'
 }
 
-DATA_FOLDER = 'data/csv'
-
 DATA_METADATA = {
     TABLE_NAME_LEGALLY_OPERATING_BUSINESS: {
-        'filepath': f'{DATA_FOLDER}/{TABLE_NAME_LEGALLY_OPERATING_BUSINESS}',
+        'filename': f'{TABLE_NAME_LEGALLY_OPERATING_BUSINESS}',
         'dtypes': DTYPES_LEGALLY_OPERATING_BUSINESS,
         'columns': list(DTYPES_LEGALLY_OPERATING_BUSINESS.keys()),
         'default_column': list(DTYPES_LEGALLY_OPERATING_BUSINESS.keys())[0],
@@ -34,7 +32,7 @@ DATA_METADATA = {
         'date_column': 'License Creation Date'
     },
     TABLE_NAME_PARKING_VIOLATION_ISSUED: {
-        'filepath': f'{DATA_FOLDER}/{TABLE_NAME_PARKING_VIOLATION_ISSUED}',
+        'filename': f'{TABLE_NAME_PARKING_VIOLATION_ISSUED}',
         'dtypes': DTYPES_PARKING_VIOLATION_ISSUED,
         'columns': list(DTYPES_PARKING_VIOLATION_ISSUED.keys()),
         'default_column': list(DTYPES_PARKING_VIOLATION_ISSUED.keys())[0],
@@ -43,7 +41,7 @@ DATA_METADATA = {
         'date_column': 'Issue Date'
     },
     TABLE_NAME_WEATHER: {
-        'filepath': f'{DATA_FOLDER}/{TABLE_NAME_WEATHER}',
+        'filename': f'{TABLE_NAME_WEATHER}',
         'dtypes': DTYPES_WEATHER,
         'columns': list(DTYPES_WEATHER.keys()),
         'default_column': list(DTYPES_WEATHER.keys())[0],
@@ -52,7 +50,7 @@ DATA_METADATA = {
         'date_column': 'Time'
     },
     TABLE_NAME_EVENT: {
-        'filepath': f'{DATA_FOLDER}/{TABLE_NAME_EVENT}',
+        'filename': f'{TABLE_NAME_EVENT}',
         'dtypes': DTYPES_EVENT,
         'columns': list(DTYPES_EVENT.keys()),
         'default_column': list(DTYPES_EVENT.keys())[0],
@@ -61,10 +59,10 @@ DATA_METADATA = {
         'date_column': 'date'
     },
     'VIOLATION_COUNTY': {
-        'filepath': f'{DATA_FOLDER}/VIOLATION_COUNTY.csv',
+        'filename': f'VIOLATION_COUNTY.csv',
     },
     TABLE_NAME_REGISTERED_VEHICLES: {
-        'filepath': f'{DATA_FOLDER}/{TABLE_NAME_REGISTERED_VEHICLES}',
+        'filename': f'{TABLE_NAME_REGISTERED_VEHICLES}',
         'dtypes': DTYPES_REGISTERED_VEHICLES,
         'columns': list(DTYPES_REGISTERED_VEHICLES.keys()),
         'default_column': list(DTYPES_REGISTERED_VEHICLES.keys())[1],
@@ -86,8 +84,8 @@ DATA_METADATA = {
 
 
 def extract(table_name: str,
-            content_root_path='..') -> dd.DataFrame:
-    data = dd.read_csv(urlpath=f"{content_root_path}/{DATA_METADATA[table_name]['filepath']}.csv",
+            data_path: str) -> dd.DataFrame:
+    data = dd.read_csv(urlpath=f"{data_path}/{DATA_METADATA[table_name]['filename']}.csv",
                        dtype=DATA_METADATA[table_name]['dtypes'],
                        blocksize='64MB')
     return data

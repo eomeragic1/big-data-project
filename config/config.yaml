@@ -1,0 +1,10 @@
+environment:
+  name: local
+  local:
+    data_augmentation_dir: data/csv/augmentation
+    data_original_dir: data/csv/original
+    data_output_dir: data
+  hpc:
+    data_augmentation_dir: /d/hpc/home/lz3057/data/augmentation
+    data_original_dir: /d/hpc/projects/FRI/bigdata/data/NYTickets
+    data_output_dir: /d/hpc/home/lz3057/data/processed

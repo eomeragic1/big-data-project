@@ -112,8 +112,8 @@ def augment(data: dd.DataFrame,
     return transformed_data
 
 
-def extract_transform(table_name: str):
-    data = extract(table_name=table_name)
+def extract_transform(table_name: str, data_path: str):
+    data = extract(table_name=table_name, data_path=data_path)
 
     # data_VC = dd.read_csv(DATA_METADATA['VIOLATION_COUNTY'][''])
 
@@ -134,11 +134,9 @@ def extract_transform(table_name: str):
         raise RuntimeError('Unknown dataset.')
 
     if DATA_METADATA[table_name]['date_column'] is not None:
-        pass
-        # BREAKS EVENT TABLE SINCE EVENTS ARE OUTDATED
-        # transformed_data = transformed_data.loc[
-        # (transformed_data[DATA_METADATA[table_name]['date_column']] > datetime.datetime(2022, 6, 1)) & (
-        #         transformed_data[DATA_METADATA[table_name]['date_column']] < datetime.datetime(2023, 5, 31)), :]
+        transformed_data.loc[
+        (transformed_data[DATA_METADATA[table_name]['date_column']] > datetime.datetime(2022, 6, 1)) & (
+                transformed_data[DATA_METADATA[table_name]['date_column']] < datetime.datetime(2023, 5, 31)), :]
 
     transformed_data = transformed_data[DATA_METADATA[table_name]['included_columns']]
     return transformed_data
