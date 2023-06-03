@@ -10,6 +10,7 @@ def etl_single_table_transformations(list_table_name: list,
                                      input_data_path: str,
                                      output_data_path: str):
     for table_name in list_table_name:
+        print(f'Starting single table transformation for "{table_name}"...')
         tracemalloc.start()
         start_time = time.time()
 

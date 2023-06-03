@@ -43,7 +43,9 @@ if __name__ == '__main__':
     config = Box.from_yaml(filename='config/config.yaml')
     # Initialize Dask cluster client:
     #   - connects to SLURM if configuration is set to 'hpc'
+    print('Initializing Dask client...')
     client = get_client(config=config)
+    print('Dask client successfully initialized')
 
     environment_name = config['environment']['name']
 
