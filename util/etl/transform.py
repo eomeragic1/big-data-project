@@ -58,15 +58,20 @@ def transform_W(data_W: dd.DataFrame) -> dd.DataFrame:
 
     return data_W
 
+
 def transform_RV(data_RV: dd.DataFrame) -> dd.DataFrame:
-     transformed_data_RV = data_RV
-     transformed_data_RV = transformed_data_RV.loc[(transformed_data_RV['Record Type'] == 'VEH') | (transformed_data_RV['Record Type'] == 'TRL'), :]
-     transformed_data_RV['Reg Expiration Date'] = dd.to_datetime(transformed_data_RV['date'],
-                                                 format='%m/%d/%Y')
-     transformed_data_RV['Reg Valid Date'] = dd.to_datetime(transformed_data_RV['date'],
-                                                                 format='%m/%d/%Y')
-     transformed_data_RV = transformed_data_RV.loc[transformed_data_RV['Reg Expiration Date'] > datetime.datetime(2022, 6, 1), :]
-     return transformed_data_RV
+    transformed_data_RV = data_RV
+    transformed_data_RV = transformed_data_RV.loc[
+                          (transformed_data_RV['Record Type'] == 'VEH') | (transformed_data_RV['Record Type'] == 'TRL'),
+                          :]
+    transformed_data_RV['Reg Expiration Date'] = dd.to_datetime(transformed_data_RV['date'],
+                                                                format='%m/%d/%Y')
+    transformed_data_RV['Reg Valid Date'] = dd.to_datetime(transformed_data_RV['date'],
+                                                           format='%m/%d/%Y')
+    transformed_data_RV = transformed_data_RV.loc[
+                          transformed_data_RV['Reg Expiration Date'] > datetime.datetime(2022, 6, 1), :]
+    return transformed_data_RV
+
 
 def augment(data: dd.DataFrame,
             joining_data: dd.DataFrame,
@@ -92,8 +97,8 @@ def augment(data: dd.DataFrame,
     return transformed_data
 
 
-def extract_transform(table_name: str):
-    data = extract(table_name=table_name)
+def extract_transform(table_name: str, data_path: str):
+    data = extract(table_name=table_name, data_path=data_path)
 
     # data_VC = dd.read_csv(DATA_METADATA['VIOLATION_COUNTY'][''])
 

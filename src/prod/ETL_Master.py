@@ -45,12 +45,22 @@ if __name__ == '__main__':
     #   - connects to SLURM if configuration is set to 'hpc'
     client = get_client(config=config)
 
+    environment_name = config['environment']['name']
+
     # Perform the initial data transformations
     if args.data == 'All':
-        etl_single_table_transformations(list_table_name=LIST_TABLE_NAME)
+        etl_single_table_transformations(
+            list_table_name=LIST_TABLE_NAME,
+            input_data_path=config['environment'][environment_name]['data_augmentation_dir'],
+            output_data_path=config['environment'][environment_name]['data_output_dir']
+        )
     elif args.data in LIST_TABLE_NAME:
         list_table_name = [args.data]
-        etl_single_table_transformations(list_table_name=list_table_name)
+        etl_single_table_transformations(
+            list_table_name=list_table_name,
+            input_data_path=config['environment'][environment_name]['data_augmentation_dir'],
+            output_data_path=config['environment'][environment_name]['data_output_dir']
+        )
     else:
         raise argparse.ArgumentError(argument=arg_data,
                                      message='Invalid argument value for data. Add the "-h" '
