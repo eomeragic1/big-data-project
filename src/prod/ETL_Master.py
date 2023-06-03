@@ -28,9 +28,7 @@ if __name__ == '__main__':
         epilog='Text at the bottom of help')
     arg_data = parser.add_argument("-d", "--data",
                                    type=str,
-                                   help="Specify dataset to process. If parameter is set to 'All' "
-                                        "or not specified, all the possible datasets are processed."
-                                        f"Possible values: {', '.join(LIST_TABLE_NAME)}.",
+                                   help=f"Specify dataset to process. If parameter is set to 'All' or not specified, all the possible datasets are processed. Possible values: {', '.join(LIST_TABLE_NAME)}.",
                                    default='All')
     arg_augmentation = parser.add_argument("-a",
                                            "--augmentation",
@@ -65,8 +63,7 @@ if __name__ == '__main__':
         )
     else:
         raise argparse.ArgumentError(argument=arg_data,
-                                     message='Invalid argument value for data. Add the "-h" '
-                                             'option to see argument specifications.')
+                                     message='Invalid argument value for data. Add the "-h" option to see argument specifications.')
 
     # Perform data augmentation on NY tickets dataset
     if args.augmentation:
