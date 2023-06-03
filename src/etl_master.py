@@ -5,13 +5,14 @@ from box import Box
 
 from util.custom.common import read_parquet_table, get_client
 from util.etl.load import load
-from util.etl.transform import extract_transform, augment
+from util.etl.transform import extract_transform, augment, postprocess_load_permitted_events
 
 LIST_TABLE_NAME = [
     # 'LEGALLY_OPERATING_BUSINESS',
     # 'PARKING_VIOLATION_ISSUED',
     'WEATHER',
-    'EVENT'
+    'EVENT',
+    'PERMITTED_EVENTS'
 ]
 
 
@@ -21,11 +22,14 @@ def etl_single_table_transformations(list_table_name: list):
         start_time = time.time()
 
         # Extract and transform custom
-        transformed_data = extract_transform(table_name=table_name)
+ #       transformed_data = extract_transform(table_name=table_name)
 
         # Load custom to HDF5 and Parquet
-        load(data=transformed_data,
-             table_name=table_name)
+ #       load(data=transformed_data,
+ #            table_name=table_name)
+
+        if table_name == 'PERMITTED_EVENTS':
+            postprocess_load_permitted_events()
 
         peak_memory_usage = round(tracemalloc.get_traced_memory()[1] / 1000000, 2)
         execution_time_in_s = round(time.time() - start_time, 2)

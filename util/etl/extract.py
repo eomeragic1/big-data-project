@@ -9,6 +9,8 @@ from util.custom.parking_violation_issued import \
     DTYPES_PARKING_VIOLATION_ISSUED, \
     TABLE_NAME_PARKING_VIOLATION_ISSUED, \
     INCLUDED_COLUMNS_PARKING_VIOLATION_ISSUED
+from util.custom.permitted_events import TABLE_NAME_PERMITTED_EVENTS, DTYPES_PERMITTED_EVENTS, \
+    INCLUDED_COLUMNS_PERMITTED_EVENTS
 from util.custom.registered_vehicles import TABLE_NAME_REGISTERED_VEHICLES, DTYPES_REGISTERED_VEHICLES, \
     INCLUDED_COLUMNS_REGISTERED_VEHICLES
 from util.custom.weather import TABLE_NAME_WEATHER, DTYPES_WEATHER, INCLUDED_COLUMNS_WEATHER
@@ -19,7 +21,7 @@ DTYPES_VIOLATION_CODE = {
     'Violation County File Name Suffix': 'str'
 }
 
-DATA_FOLDER = 'custom/csv'
+DATA_FOLDER = 'data/csv'
 
 DATA_METADATA = {
     TABLE_NAME_LEGALLY_OPERATING_BUSINESS: {
@@ -69,7 +71,17 @@ DATA_METADATA = {
         'included_columns': INCLUDED_COLUMNS_REGISTERED_VEHICLES,
         'identifier_columns': ['VIN'],
         'date_column': None
+    },
+    TABLE_NAME_PERMITTED_EVENTS: {
+        'filepath': f'{DATA_FOLDER}/{TABLE_NAME_PERMITTED_EVENTS}',
+        'dtypes': DTYPES_PERMITTED_EVENTS,
+        'columns': list(DTYPES_PERMITTED_EVENTS.keys()),
+        'default_column': list(DTYPES_PERMITTED_EVENTS.keys())[1],
+        'included_columns': INCLUDED_COLUMNS_PERMITTED_EVENTS,
+        'identifier_columns': ['Event ID'],
+        'date_column': 'Start Date/Time'
     }
+
 }
 
 

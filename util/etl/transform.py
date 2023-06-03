@@ -3,7 +3,9 @@ import datetime
 import dask.dataframe as dd
 import pandas as pd
 
+from util.custom.common import read_parquet_table
 from util.etl.extract import extract, DATA_METADATA
+from util.etl.load import load
 
 
 def transform_LOB(data_LOB: dd.DataFrame) -> dd.DataFrame:
@@ -58,15 +60,33 @@ def transform_W(data_W: dd.DataFrame) -> dd.DataFrame:
 
     return data_W
 
+
 def transform_RV(data_RV: dd.DataFrame) -> dd.DataFrame:
-     transformed_data_RV = data_RV
-     transformed_data_RV = transformed_data_RV.loc[(transformed_data_RV['Record Type'] == 'VEH') | (transformed_data_RV['Record Type'] == 'TRL'), :]
-     transformed_data_RV['Reg Expiration Date'] = dd.to_datetime(transformed_data_RV['date'],
-                                                 format='%m/%d/%Y')
-     transformed_data_RV['Reg Valid Date'] = dd.to_datetime(transformed_data_RV['date'],
-                                                                 format='%m/%d/%Y')
-     transformed_data_RV = transformed_data_RV.loc[transformed_data_RV['Reg Expiration Date'] > datetime.datetime(2022, 6, 1), :]
-     return transformed_data_RV
+    transformed_data_RV = data_RV
+    transformed_data_RV = transformed_data_RV.loc[
+                          (transformed_data_RV['Record Type'] == 'VEH') | (transformed_data_RV['Record Type'] == 'TRL'),
+                          :]
+    transformed_data_RV['Reg Expiration Date'] = dd.to_datetime(transformed_data_RV['Reg Expiration Date'],
+                                                                format='%m/%d/%Y')
+    transformed_data_RV['Reg Valid Date'] = dd.to_datetime(transformed_data_RV['Reg Valid Date'],
+                                                           format='%m/%d/%Y')
+    transformed_data_RV = transformed_data_RV.loc[
+                          transformed_data_RV['Reg Expiration Date'] > datetime.datetime(2022, 6, 1), :]
+    return transformed_data_RV
+
+
+def transform_PE(data_PE: dd.DataFrame) -> dd.DataFrame:
+    transformed_data_PE = data_PE
+    transformed_data_PE['Start Date/Time'] = dd.to_datetime(transformed_data_PE['Start Date/Time'],
+                                                            format='%m/%d/%Y %I:%M:%S %p')
+    transformed_data_PE['End Date/Time'] = dd.to_datetime(transformed_data_PE['End Date/Time'],
+                                                          format='%m/%d/%Y %I:%M:%S %p')
+    filtered_data = transformed_data_PE.loc[
+                          (transformed_data_PE['End Date/Time'] >= datetime.datetime(2022, 6, 1)) & (
+                                  transformed_data_PE['Start Date/Time'] <= datetime.datetime.now()),
+                          :].reset_index(drop=True)
+    return filtered_data
+
 
 def augment(data: dd.DataFrame,
             joining_data: dd.DataFrame,
@@ -108,13 +128,32 @@ def extract_transform(table_name: str):
         transformed_data = transform_E(data_E=data)
     elif table_name == 'REGISTERED_VEHICLES':
         transformed_data = transform_RV(data_RV=data)
+    elif table_name == 'PERMITTED_EVENTS':
+        transformed_data = transform_PE(data_PE=data)
     else:
         raise RuntimeError('Unknown dataset.')
 
     if DATA_METADATA[table_name]['date_column'] is not None:
-        transformed_data.loc[
-        (transformed_data[DATA_METADATA[table_name]['date_column']] > datetime.datetime(2022, 6, 1)) & (
-                transformed_data[DATA_METADATA[table_name]['date_column']] < datetime.datetime(2023, 5, 31)), :]
+        pass
+        # BREAKS EVENT TABLE SINCE EVENTS ARE OUTDATED
+        # transformed_data = transformed_data.loc[
+        # (transformed_data[DATA_METADATA[table_name]['date_column']] > datetime.datetime(2022, 6, 1)) & (
+        #         transformed_data[DATA_METADATA[table_name]['date_column']] < datetime.datetime(2023, 5, 31)), :]
 
     transformed_data = transformed_data[DATA_METADATA[table_name]['included_columns']]
     return transformed_data
+
+
+def postprocess_load_permitted_events():
+    data = read_parquet_table('PERMITTED_EVENTS')
+
+    data['Date'] = data.apply(lambda row: pd.date_range(start=row['Start Date/Time'], end=row['End Date/Time'], freq='D'), axis=1)
+    data = data.explode('Date')
+    data['Date'] = dd.to_datetime(data['Date'], format='%Y-%m-%d %H:%M:%S')
+    data['Date'] = data['Date'].dt.date
+    # Step 4: Group by date and borough, and compute the count of active events
+    result = data.groupby(['Date', 'Event Borough']).size().reset_index().compute()
+    result.columns = ['Date', 'Event Borough', 'Events Count']
+    result = result.loc[(result['Date'] >= datetime.date(2022, 6, 1)) & (result['Date'] <= datetime.date.today()), :]
+    result = result.sort_values(by=['Date', 'Event Borough'])
+    load(result, 'PERMITTED_EVENTS_FILTERED')
