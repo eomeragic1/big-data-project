@@ -19,11 +19,11 @@ DTYPES_VIOLATION_CODE = {
     'Violation County File Name Suffix': 'str'
 }
 
-DATA_FOLDER = 'custom/csv'
+DATA_FOLDER = 'data/csv'
 
 DATA_METADATA = {
     TABLE_NAME_LEGALLY_OPERATING_BUSINESS: {
-        'filepath': f'{DATA_FOLDER}/{TABLE_NAME_LEGALLY_OPERATING_BUSINESS}',
+        'filepath': f'{DATA_FOLDER}/augmentation/{TABLE_NAME_LEGALLY_OPERATING_BUSINESS}',
         'dtypes': DTYPES_LEGALLY_OPERATING_BUSINESS,
         'columns': list(DTYPES_LEGALLY_OPERATING_BUSINESS.keys()),
         'default_column': list(DTYPES_LEGALLY_OPERATING_BUSINESS.keys())[0],
@@ -41,7 +41,7 @@ DATA_METADATA = {
         'date_column': 'Issue Date'
     },
     TABLE_NAME_WEATHER: {
-        'filepath': f'{DATA_FOLDER}/{TABLE_NAME_WEATHER}',
+        'filepath': f'{DATA_FOLDER}/augmentation/{TABLE_NAME_WEATHER}',
         'dtypes': DTYPES_WEATHER,
         'columns': list(DTYPES_WEATHER.keys()),
         'default_column': list(DTYPES_WEATHER.keys())[0],
@@ -50,7 +50,7 @@ DATA_METADATA = {
         'date_column': 'Time'
     },
     TABLE_NAME_EVENT: {
-        'filepath': f'{DATA_FOLDER}/{TABLE_NAME_EVENT}',
+        'filepath': f'{DATA_FOLDER}/augmentation/{TABLE_NAME_EVENT}',
         'dtypes': DTYPES_EVENT,
         'columns': list(DTYPES_EVENT.keys()),
         'default_column': list(DTYPES_EVENT.keys())[0],
@@ -59,7 +59,7 @@ DATA_METADATA = {
         'date_column': 'date'
     },
     'VIOLATION_COUNTY': {
-        'filepath': f'{DATA_FOLDER}/VIOLATION_COUNTY.csv',
+        'filepath': f'{DATA_FOLDER}/augmentation/VIOLATION_COUNTY.csv',
     },
     TABLE_NAME_REGISTERED_VEHICLES: {
         'filepath': f'{DATA_FOLDER}/{TABLE_NAME_REGISTERED_VEHICLES}',
@@ -74,7 +74,7 @@ DATA_METADATA = {
 
 
 def extract(table_name: str,
-            content_root_path='..') -> dd.DataFrame:
+            content_root_path='.') -> dd.DataFrame:
     data = dd.read_csv(urlpath=f"{content_root_path}/{DATA_METADATA[table_name]['filepath']}.csv",
                        dtype=DATA_METADATA[table_name]['dtypes'],
                        blocksize='64MB')
