@@ -1,3 +1,5 @@
+import glob
+
 import dask.dataframe as dd
 
 from util.custom.event import TABLE_NAME_EVENT, DTYPES_EVENT, INCLUDED_COLUMNS_EVENT
@@ -85,7 +87,13 @@ DATA_METADATA = {
 
 def extract(table_name: str,
             data_path: str) -> dd.DataFrame:
-    data = dd.read_csv(urlpath=f"{data_path}/{DATA_METADATA[table_name]['filename']}.csv",
-                       dtype=DATA_METADATA[table_name]['dtypes'],
-                       blocksize='64MB')
+    if table_name == 'PARKING_VIOLATION_ISSUED':
+        list_data_filename = glob.glob(data_path + '/*.csv')
+        data = dd.read_csv(urlpath=list_data_filename,
+                           dtype=DATA_METADATA[table_name]['dtypes'],
+                           blocksize='64MB')
+    else:
+        data = dd.read_csv(urlpath=f"{data_path}/{DATA_METADATA[table_name]['filename']}.csv",
+                           dtype=DATA_METADATA[table_name]['dtypes'],
+                           blocksize='64MB')
     return data

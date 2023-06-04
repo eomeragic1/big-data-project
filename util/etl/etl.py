@@ -1,22 +1,28 @@
 import time
 import tracemalloc
 
+from box import Box
+
 from util.custom.common import read_parquet_table
 from util.etl.load import load
 from util.etl.transform import extract_transform, augment
 
 
 def etl_single_table_transformations(list_table_name: list,
-                                     input_data_path: str,
-                                     output_data_path: str):
+                                     config: Box,
+                                     environment_name: str):
+    input_data_path_original = config['environment'][environment_name]['data_original_dir']
+    input_data_path_augmentation = config['environment'][environment_name]['data_augmentation_dir']
+    output_data_path = config['environment'][environment_name]['data_output_dir']
     for table_name in list_table_name:
         print(f'Starting single table transformation for "{table_name}"...')
         tracemalloc.start()
         start_time = time.time()
 
         # Extract and transform custom
+        input_data = input_data_path_augmentation if table_name != 'PARKING_VIOLATION_ISSUED' else input_data_path_original
         transformed_data = extract_transform(table_name=table_name,
-                                             data_path=input_data_path)
+                                             data_path=input_data)
 
         # Load custom to HDF5 and Parquet
         load(data=transformed_data,
