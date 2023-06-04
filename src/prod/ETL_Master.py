@@ -71,5 +71,4 @@ if __name__ == '__main__':
         etl_augmentation(list_table_name=list(filter(lambda x: x != 'PARKING_VIOLATION_ISSUED', LIST_TABLE_NAME)))
 
     client.close()
-    if cluster is not None:
-        cluster.close()
+    cluster.close()
