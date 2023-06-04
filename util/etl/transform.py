@@ -3,9 +3,7 @@ import datetime
 import dask.dataframe as dd
 import pandas as pd
 
-from util.custom.common import read_parquet_table
 from util.etl.extract import extract, DATA_METADATA
-from util.etl.load import load
 
 
 def transform_LOB(data_LOB: dd.DataFrame) -> dd.DataFrame:
@@ -28,13 +26,13 @@ def transform_PVI(data_PVI: dd.DataFrame) -> dd.DataFrame:
     def transform_violation_time(data: pd.DataFrame):
         data['Violation Time'] = list(
             map(
-                lambda x: 0 if x is None else
-                (int(x[:2]) + (0 if x[4] == 'A' else 12))
+                lambda x: 0 if x is None or x == 'foo' else
+                (int(x[:2]) + (0 if x[4] == 'A' else 12)), data['Violation Time']
             )
         )
         return data
 
-    transformed_data_PVI['Violation Time'] = transformed_data_PVI.map_partitions(transform_violation_time)
+    transformed_data_PVI.map_partitions(transform_violation_time)
 
     def transform_vehicle_expiration_date(data: pd.DataFrame):
         data['Vehicle Expiration Date'] = pd.to_datetime(data['Vehicle Expiration Date'],
@@ -42,7 +40,7 @@ def transform_PVI(data_PVI: dd.DataFrame) -> dd.DataFrame:
                                                          format='%Y%m%d')
         return data
 
-    transformed_data_PVI = transformed_data_PVI.map_partitions(transform_vehicle_expiration_date)
+    transformed_data_PVI.map_partitions(transform_vehicle_expiration_date)
 
     return transformed_data_PVI
 
@@ -72,7 +70,7 @@ def transform_RV(data_RV: dd.DataFrame) -> dd.DataFrame:
                                                            format='%m/%d/%Y')
     transformed_data_RV = transformed_data_RV.loc[
                           (transformed_data_RV['Reg Expiration Date'] > datetime.datetime(2022, 6, 1)) & (
-                                      transformed_data_RV['Reg Expiration Date'] > datetime.datetime.now()), :]
+                                  transformed_data_RV['Reg Expiration Date'] > datetime.datetime.now()), :]
 
     grouped_df = transformed_data_RV.groupby(['Make']).size().reset_index()
     grouped_df.columns = ['Vehicle Make', 'Count']
