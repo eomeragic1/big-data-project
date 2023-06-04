@@ -1,14 +1,13 @@
 cluster:
+  local:
+    n_workers: 2
+    threads_per_worker: 4
   hpc:
     memory: 16GB
     cores: 16
     processes: 8
-  local:
-    n_workers: 2
-    threads_per_worker: 4
 
 environment:
-  name: local
   local:
     data_augmentation_dir: data/csv/augmentation
     data_original_dir: data/csv/original

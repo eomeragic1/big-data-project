@@ -36,17 +36,28 @@ if __name__ == '__main__':
                                            help="Run data augmentation.",
                                            action='store_true',
                                            default=False)
+    arg_env = parser.add_argument("-e",
+                                  "--env",
+                                  help="Specify environment: 'local'/'hpc'.",
+                                  type=str,
+                                  default='local')
     args = parser.parse_args()
+
+    if args.env in ('local', 'hpc'):
+        environment_name = args.env
+    else:
+        raise argparse.ArgumentError(argument=arg_env,
+                                     message='Invalid argument value for environment. Add the "-h" option to see argument specifications.')
 
     # Read configuration file
     config = Box.from_yaml(filename='config/config.yaml')
+
     # Initialize Dask cluster client:
     #   - connects to SLURM if configuration is set to 'hpc'
     print('Initializing Dask client...')
-    client, cluster = dask_config(config=config)
+    client, cluster = dask_config(config=config,
+                                  environment_name=environment_name)
     print('Dask client successfully initialized')
-
-    environment_name = config['environment']['name']
 
     # Perform the initial data transformations
     if args.data == 'All':

@@ -10,21 +10,22 @@ def read_parquet_table(table_name: str,
     return dd.read_parquet(f'{content_root_path}/{data_path}/{table_name}.parquet')
 
 
-def dask_config(config: Box) -> Client:
-    if config['environment']['name'] == 'local':
+def dask_config(config: Box,
+                environment_name: str) -> Client:
+    if environment_name == 'local':
         cluster = LocalCluster(
-            n_workers=config['cluster']['local']['n_workers'],
-            threads_per_worker=config['cluster']['local']['threads_per_worker'])
+            n_workers=config['cluster'][environment_name]['n_workers'],
+            threads_per_worker=config['cluster'][environment_name]['threads_per_worker'])
 
         client = Client(cluster, timeout="200s")
 
         return client, cluster
 
-    elif config['environment']['name'] == 'hpc':
+    elif environment_name == 'hpc':
         cluster = dask_jobqueue.SLURMCluster(
-            processes=config['environment']['hpc']['processes'],
-            cores=config['environment']['hpc']['cores'],
-            memory=config['environment']['hpc']['memory']
+            processes=config['environment'][environment_name]['processes'],
+            cores=config['environment'][environment_name]['cores'],
+            memory=config['environment'][environment_name]['memory']
         )
 
         client = Client(cluster, timeout="120s")
