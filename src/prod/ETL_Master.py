@@ -11,7 +11,7 @@ parent_parent_dir = os.path.dirname(parent_dir)
 sys.path.insert(0, parent_dir)
 sys.path.insert(0, parent_parent_dir)
 
-from util.custom.common import get_client
+from util.custom.common import dask_config
 from util.etl.etl import etl_single_table_transformations, etl_augmentation
 
 LIST_TABLE_NAME = [
@@ -26,6 +26,7 @@ if __name__ == '__main__':
         prog='ProgramName',
         description='What the program does',
         epilog='Text at the bottom of help')
+
     arg_data = parser.add_argument("-d", "--data",
                                    type=str,
                                    help=f"Specify dataset to process. If parameter is set to 'All' or not specified, all the possible datasets are processed. Possible values: {', '.join(LIST_TABLE_NAME)}.",
@@ -42,7 +43,7 @@ if __name__ == '__main__':
     # Initialize Dask cluster client:
     #   - connects to SLURM if configuration is set to 'hpc'
     print('Initializing Dask client...')
-    client = get_client(config=config)
+    client, cluster = dask_config(config=config)
     print('Dask client successfully initialized')
 
     environment_name = config['environment']['name']
@@ -70,3 +71,5 @@ if __name__ == '__main__':
         etl_augmentation(list_table_name=list(filter(lambda x: x != 'PARKING_VIOLATION_ISSUED', LIST_TABLE_NAME)))
 
     client.close()
+    if cluster is not None:
+        cluster.close()

@@ -2,7 +2,7 @@ import pandas as pd
 from box import Box
 from dask import dataframe as dd
 
-from util.custom.common import read_parquet_table, get_client
+from util.custom.common import read_parquet_table, dask_config
 from util.etl.extract import DATA_METADATA
 
 LIST_TABLE_NAME = [
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     config = Box.from_yaml(filename='../config/config.yaml')
     # Initialize Dask cluster client:
     #   - connects to SLURM if configuration is set to 'hpc'
-    client = get_client(config=config)
+    client = dask_config(config=config)
 
     processed_data_table = []
     processed_data_column = []
