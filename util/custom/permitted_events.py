@@ -1,11 +1,9 @@
 TABLE_NAME_PERMITTED_EVENTS = 'PERMITTED_EVENTS'
 
 INCLUDED_COLUMNS_PERMITTED_EVENTS = [
-    'Start Date/Time',
-    'End Date/Time',
+    'Date',
     'Event Borough',
-    'Event Location',
-    'Police Precinct'
+    'Events Count',
 ]
 DTYPES_PERMITTED_EVENTS = {
     'Event ID': 'str',

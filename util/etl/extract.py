@@ -77,7 +77,7 @@ DATA_METADATA = {
         'default_column': list(DTYPES_PERMITTED_EVENTS.keys())[1],
         'included_columns': INCLUDED_COLUMNS_PERMITTED_EVENTS,
         'identifier_columns': ['Event ID'],
-        'date_column': 'Start Date/Time'
+        'date_column': 'Date'
     }
 
 }

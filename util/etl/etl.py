@@ -43,7 +43,8 @@ def etl_augmentation(list_table_name: list):
                        joining_table_name=table_name)
 
     load(data=data,
-         table_name='AUGMENTED_PARKING_VIOLATION_ISSUED')
+         table_name='AUGMENTED_PARKING_VIOLATION_ISSUED',
+         data_path='data')
 
     peak_memory_usage = round(tracemalloc.get_traced_memory()[1] / 1000000, 2)
     execution_time_in_s = round(time.time() - start_time, 2)

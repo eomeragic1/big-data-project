@@ -94,6 +94,7 @@ def transform_PE(data_PE: dd.DataFrame) -> dd.DataFrame:
     result = filtered_data.groupby(['Date', 'Event Borough']).size().reset_index().compute()
     result.columns = ['Date', 'Event Borough', 'Events Count']
     result = result.loc[(result['Date'] >= datetime.date(2022, 6, 1)) & (result['Date'] <= datetime.date.today()), :]
+    result['Date'] = result['Date'].apply(pd.to_datetime)
     result = result.sort_values(by=['Date', 'Event Borough'])
 
     return result
