@@ -23,9 +23,9 @@ def dask_config(config: Box,
 
     elif environment_name == 'hpc':
         cluster = dask_jobqueue.SLURMCluster(
-            processes=config['environment'][environment_name]['processes'],
-            cores=config['environment'][environment_name]['cores'],
-            memory=config['environment'][environment_name]['memory']
+            processes=config['cluster'][environment_name]['processes'],
+            cores=config['cluster'][environment_name]['cores'],
+            memory=config['cluster'][environment_name]['memory']
         )
 
         client = Client(cluster, timeout="120s")
