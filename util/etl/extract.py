@@ -71,7 +71,7 @@ DATA_METADATA = {
         'date_column': None
     },
     TABLE_NAME_PERMITTED_EVENTS: {
-        'filepath': f'{TABLE_NAME_PERMITTED_EVENTS}',
+        'filename': f'{TABLE_NAME_PERMITTED_EVENTS}',
         'dtypes': DTYPES_PERMITTED_EVENTS,
         'columns': list(DTYPES_PERMITTED_EVENTS.keys()),
         'default_column': list(DTYPES_PERMITTED_EVENTS.keys())[1],

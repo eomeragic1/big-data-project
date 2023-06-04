@@ -3,7 +3,7 @@ import tracemalloc
 
 from util.custom.common import read_parquet_table
 from util.etl.load import load
-from util.etl.transform import extract_transform, augment, postprocess_load_permitted_events
+from util.etl.transform import extract_transform, augment
 
 
 def etl_single_table_transformations(list_table_name: list,
@@ -22,10 +22,6 @@ def etl_single_table_transformations(list_table_name: list,
         load(data=transformed_data,
              table_name=table_name,
              data_path=output_data_path)
-
-        if table_name == 'PERMITTED_EVENTS':
-            postprocess_load_permitted_events()
-
 
         peak_memory_usage = round(tracemalloc.get_traced_memory()[1] / 1000000, 2)
         execution_time_in_s = round(time.time() - start_time, 2)

@@ -85,7 +85,18 @@ def transform_PE(data_PE: dd.DataFrame) -> dd.DataFrame:
                           (transformed_data_PE['End Date/Time'] >= datetime.datetime(2022, 6, 1)) & (
                                   transformed_data_PE['Start Date/Time'] <= datetime.datetime.now()),
                           :].reset_index(drop=True)
-    return filtered_data
+    filtered_data['Date'] = filtered_data.apply(
+        lambda row: pd.date_range(start=row['Start Date/Time'], end=row['End Date/Time'], freq='D'), axis=1)
+    filtered_data = filtered_data.explode('Date')
+    filtered_data['Date'] = dd.to_datetime(filtered_data['Date'], format='%Y-%m-%d %H:%M:%S')
+    filtered_data['Date'] = filtered_data['Date'].dt.date
+    # Step 4: Group by date and borough, and compute the count of active events
+    result = filtered_data.groupby(['Date', 'Event Borough']).size().reset_index().compute()
+    result.columns = ['Date', 'Event Borough', 'Events Count']
+    result = result.loc[(result['Date'] >= datetime.date(2022, 6, 1)) & (result['Date'] <= datetime.date.today()), :]
+    result = result.sort_values(by=['Date', 'Event Borough'])
+
+    return result
 
 
 def augment(data: dd.DataFrame,
@@ -107,6 +118,15 @@ def augment(data: dd.DataFrame,
             right=joining_data,
             left_on='Street Name',
             right_on='A - Address Street Name',
+            how='left'
+        )
+    elif joining_table_name == 'PERMITTED_EVENTS':
+        joining_data = joining_data.add_prefix('A - ')
+        transformed_data = dd.merge(
+            left=data,
+            right=joining_data,
+            left_on=['Issue Date', 'Violation County'],
+            right_on=['A - Date', 'A - Borough'],
             how='left'
         )
     return transformed_data
@@ -140,18 +160,3 @@ def extract_transform(table_name: str, data_path: str):
 
     transformed_data = transformed_data[DATA_METADATA[table_name]['included_columns']]
     return transformed_data
-
-
-def postprocess_load_permitted_events():
-    data = read_parquet_table('PERMITTED_EVENTS')
-
-    data['Date'] = data.apply(lambda row: pd.date_range(start=row['Start Date/Time'], end=row['End Date/Time'], freq='D'), axis=1)
-    data = data.explode('Date')
-    data['Date'] = dd.to_datetime(data['Date'], format='%Y-%m-%d %H:%M:%S')
-    data['Date'] = data['Date'].dt.date
-    # Step 4: Group by date and borough, and compute the count of active events
-    result = data.groupby(['Date', 'Event Borough']).size().reset_index().compute()
-    result.columns = ['Date', 'Event Borough', 'Events Count']
-    result = result.loc[(result['Date'] >= datetime.date(2022, 6, 1)) & (result['Date'] <= datetime.date.today()), :]
-    result = result.sort_values(by=['Date', 'Event Borough'])
-    load(result, 'PERMITTED_EVENTS_FILTERED')
