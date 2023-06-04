@@ -49,7 +49,7 @@ DATA_METADATA = {
         'default_column': list(DTYPES_WEATHER.keys())[0],
         'included_columns': INCLUDED_COLUMNS_WEATHER,
         'identifier_columns': ['Time', 'Borough'],
-        'date_column': 'Time'
+        'date_column': None
     },
     TABLE_NAME_EVENT: {
         'filename': f'{TABLE_NAME_EVENT}',
@@ -61,7 +61,13 @@ DATA_METADATA = {
         'date_column': 'date'
     },
     'VIOLATION_COUNTY': {
-        'filename': f'VIOLATION_COUNTY.csv',
+        'filename': 'VIOLATION_COUNTY',
+        'dtypes': DTYPES_VIOLATION_CODE,
+        'columns': list(DTYPES_VIOLATION_CODE.keys()),
+        'default_column': list(DTYPES_VIOLATION_CODE.keys())[0],
+        'included_columns': list(DTYPES_VIOLATION_CODE.keys()),
+        'identifier_columns': [list(DTYPES_VIOLATION_CODE.keys())[0]],
+        'date_column': None,
     },
     TABLE_NAME_REGISTERED_VEHICLES: {
         'filename': f'{TABLE_NAME_REGISTERED_VEHICLES}',

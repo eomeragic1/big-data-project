@@ -65,7 +65,9 @@ def transform_E(data_E: dd.DataFrame) -> dd.DataFrame:
 def transform_W(data_W: dd.DataFrame) -> dd.DataFrame:
     transformed_data_W = data_W
     transformed_data_W['Time'] = dd.to_datetime(transformed_data_W['Time'])
-
+    transformed_data_W['Date'] = transformed_data_W['Time'].dt.date
+    transformed_data_W['Time'] = transformed_data_W['Time'].dt.hour
+    transformed_data_W['Date'] = dd.to_datetime(transformed_data_W['Date'], format='%Y-%m-%d')
     return data_W
 
 
@@ -117,41 +119,42 @@ def transform_PE(data_PE: dd.DataFrame) -> dd.DataFrame:
 def augment(data: dd.DataFrame,
             joining_data: dd.DataFrame,
             joining_table_name: str):
-    if joining_table_name == 'LEGALLY_OPERATING_BUSINESS':
-        joining_data = joining_data.add_prefix('A - ')
-        transformed_data = dd.merge(
-            left=data,
-            right=joining_data,
-            left_on='Street Name',
-            right_on='A - Address Street Name',
-            how='left'
-        )
-    elif joining_table_name == 'WEATHER':
-        joining_data = joining_data.add_prefix('A - ')
-        transformed_data = dd.merge(
-            left=data,
-            right=joining_data,
-            left_on='Street Name',
-            right_on='A - Address Street Name',
-            how='left'
-        )
-    elif joining_table_name == 'VIOLATION_COUNTY':
+    if joining_table_name == 'VIOLATION_COUNTY':
         transformed_data = dd.merge(
             left=data,
             right=joining_data,
             left_on='Violation County',
             right_on='Violation County Code',
-            how='left'
+            how='inner'
         )
     elif joining_table_name == 'PERMITTED_EVENTS':
+        joining_data = joining_data.add_prefix('PE - ')
+        transformed_data = dd.merge(
+            left=data,
+            right=joining_data,
+            left_on=['Issue Date', 'Violation County Name'],
+            right_on=['PE - Date', 'PE - Event Borough'],
+            how='left'
+        )
+    elif joining_table_name == 'WEATHER':
+        joining_data = joining_data.add_prefix('W - ')
+        transformed_data = dd.merge(
+            left=data,
+            right=joining_data,
+            left_on=['Issue Date', 'Violation Time', 'Violation County Name'],
+            right_on=['W - Date', 'W - Time', 'W - Borough'],
+            how='inner'
+        )
+    elif joining_table_name == 'LEGALLY_OPERATING_BUSINESS':
         joining_data = joining_data.add_prefix('A - ')
         transformed_data = dd.merge(
             left=data,
             right=joining_data,
-            left_on=['Issue Date', 'Violation County File Name'],
-            right_on=['A - Date', 'A - Event Borough'],
+            left_on='Street Name',
+            right_on='A - Address Street Name',
             how='left'
         )
+
     return transformed_data
 
 

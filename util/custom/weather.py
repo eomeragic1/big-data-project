@@ -1,6 +1,7 @@
 TABLE_NAME_WEATHER = f'WEATHER'
 
 INCLUDED_COLUMNS_WEATHER = [
+    'Date',
     'Time',
     'Temperature',
     'Precipitation',
