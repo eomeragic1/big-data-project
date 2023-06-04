@@ -1,15 +1,8 @@
 TABLE_NAME_REGISTERED_VEHICLES = f'REGISTERED_VEHICLES'
 
 INCLUDED_COLUMNS_REGISTERED_VEHICLES = [
-    'Record Type',
-    'VIN',
-    'City',
-    'State',
-    'Zip',
-    'Make',
-    'Fuel Type',
-    'Reg Valid Date',
-    'Reg Expiration Date',
+    'Vehicle Make',
+    'Count'
 ]
 DTYPES_REGISTERED_VEHICLES = {
     'Record Type': 'str',
@@ -17,9 +10,9 @@ DTYPES_REGISTERED_VEHICLES = {
     'Registration Class': 'str',
     'City': 'str',
     'State': 'str',
-    'Zip': 'int',
+    'Zip': 'str',
     'County': 'str',
-    'Model Year': 'int',
+    'Model Year': 'str',
     'Make': 'str',
     'Body Type': 'str',
     'Fuel Type': 'str',

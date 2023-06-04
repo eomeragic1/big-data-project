@@ -71,8 +71,14 @@ def transform_RV(data_RV: dd.DataFrame) -> dd.DataFrame:
     transformed_data_RV['Reg Valid Date'] = dd.to_datetime(transformed_data_RV['Reg Valid Date'],
                                                            format='%m/%d/%Y')
     transformed_data_RV = transformed_data_RV.loc[
-                          transformed_data_RV['Reg Expiration Date'] > datetime.datetime(2022, 6, 1), :]
-    return transformed_data_RV
+                          (transformed_data_RV['Reg Expiration Date'] > datetime.datetime(2022, 6, 1)) & (
+                                      transformed_data_RV['Reg Expiration Date'] > datetime.datetime.now()), :]
+
+    grouped_df = transformed_data_RV.groupby(['Make']).size().reset_index()
+    grouped_df.columns = ['Vehicle Make', 'Count']
+
+    # Compute the resulting DataFrame
+    return grouped_df
 
 
 def transform_PE(data_PE: dd.DataFrame) -> dd.DataFrame:
@@ -82,9 +88,9 @@ def transform_PE(data_PE: dd.DataFrame) -> dd.DataFrame:
     transformed_data_PE['End Date/Time'] = dd.to_datetime(transformed_data_PE['End Date/Time'],
                                                           format='%m/%d/%Y %I:%M:%S %p')
     filtered_data = transformed_data_PE.loc[
-                          (transformed_data_PE['End Date/Time'] >= datetime.datetime(2022, 6, 1)) & (
-                                  transformed_data_PE['Start Date/Time'] <= datetime.datetime.now()),
-                          :].reset_index(drop=True)
+                    (transformed_data_PE['End Date/Time'] >= datetime.datetime(2022, 6, 1)) & (
+                            transformed_data_PE['Start Date/Time'] <= datetime.datetime.now()),
+                    :].reset_index(drop=True)
     filtered_data['Date'] = filtered_data.apply(
         lambda row: pd.date_range(start=row['Start Date/Time'], end=row['End Date/Time'], freq='D'), axis=1)
     filtered_data = filtered_data.explode('Date')
