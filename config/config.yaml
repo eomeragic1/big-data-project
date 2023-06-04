@@ -5,7 +5,7 @@ cluster:
   hpc:
     memory: 16GB
     cores: 16
-    processes: 8
+    processes: 4
 
 environment:
   local:
