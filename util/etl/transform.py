@@ -2,7 +2,7 @@ import datetime
 
 import dask.dataframe as dd
 import pandas as pd
-
+import numpy as np
 from util.custom.common import read_parquet_table
 from util.etl.extract import extract, DATA_METADATA
 from util.etl.load import load
@@ -24,17 +24,26 @@ def transform_PVI(data_PVI: dd.DataFrame) -> dd.DataFrame:
     transformed_data_PVI = data_PVI
     transformed_data_PVI['Issue Date'] = dd.to_datetime(transformed_data_PVI['Issue Date'],
                                                         format='%m/%d/%Y')
+    def transform_violation_time_instance(x: str):
+        if not x or len(x) != 5 or ' ' in x:
+            return ''
+        try:
+            if x[4] not in ['A', 'P'] or int(x[2:4]) > 59 or int(x[:2]) > 12:
+                return ''
+        except ValueError:
+            return ''
+        return x
 
-    def transform_violation_time(data: pd.DataFrame):
-        data['Violation Time'] = list(
-            map(
-                lambda x: 0 if x is None else
-                (int(x[:2]) + (0 if x[4] == 'A' else 12))
-            )
-        )
-        return data
-
-    transformed_data_PVI['Violation Time'] = transformed_data_PVI.map_partitions(transform_violation_time)
+    def transform_violation_time_partition(data: pd.DataFrame):
+        return data.apply(transform_violation_time_instance)
+    transformed_data_PVI['Violation Time'] = transformed_data_PVI['Violation Time'].astype(str)
+    transformed_data_PVI['Violation Time'] = transformed_data_PVI['Violation Time'].map_partitions(
+        transform_violation_time_partition, meta=('Violation Time', str)).replace('', np.nan)
+    transformed_data_PVI = transformed_data_PVI.dropna(subset=['Violation Time'])
+    transformed_data_PVI['Violation Time'] = dd.to_datetime(
+        transformed_data_PVI['Violation Time'].apply(lambda x: f'{str(x) if x[:2] != "00" else "12" + x[2:]}M',
+                                                        meta=('Violation Time', str)), format='%I%M%p').apply(
+        lambda x: pd.to_datetime(x, unit='s').hour, meta=('Violation Time', int))
 
     def transform_vehicle_expiration_date(data: pd.DataFrame):
         data['Vehicle Expiration Date'] = pd.to_datetime(data['Vehicle Expiration Date'],
@@ -72,7 +81,7 @@ def transform_RV(data_RV: dd.DataFrame) -> dd.DataFrame:
                                                            format='%m/%d/%Y')
     transformed_data_RV = transformed_data_RV.loc[
                           (transformed_data_RV['Reg Expiration Date'] > datetime.datetime(2022, 6, 1)) & (
-                                      transformed_data_RV['Reg Expiration Date'] > datetime.datetime.now()), :]
+                                  transformed_data_RV['Reg Expiration Date'] > datetime.datetime.now()), :]
 
     grouped_df = transformed_data_RV.groupby(['Make']).size().reset_index()
     grouped_df.columns = ['Vehicle Make', 'Count']
@@ -127,13 +136,21 @@ def augment(data: dd.DataFrame,
             right_on='A - Address Street Name',
             how='left'
         )
+    elif joining_table_name == 'VIOLATION_COUNTY':
+        transformed_data = dd.merge(
+            left=data,
+            right=joining_data,
+            left_on='Violation County',
+            right_on='Violation County Code',
+            how='left'
+        )
     elif joining_table_name == 'PERMITTED_EVENTS':
         joining_data = joining_data.add_prefix('A - ')
         transformed_data = dd.merge(
             left=data,
             right=joining_data,
-            left_on=['Issue Date', 'Violation County'],
-            right_on=['A - Date', 'A - Borough'],
+            left_on=['Issue Date', 'Violation County File Name'],
+            right_on=['A - Date', 'A - Event Borough'],
             how='left'
         )
     return transformed_data
@@ -157,6 +174,8 @@ def extract_transform(table_name: str, data_path: str):
         transformed_data = transform_RV(data_RV=data)
     elif table_name == 'PERMITTED_EVENTS':
         transformed_data = transform_PE(data_PE=data)
+    elif table_name == 'VIOLATION_COUNTY':
+        transformed_data = data
     else:
         raise RuntimeError('Unknown dataset.')
 
