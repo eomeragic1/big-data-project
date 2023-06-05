@@ -22,7 +22,7 @@ def transform_LOB(data_LOB: dd.DataFrame) -> dd.DataFrame:
 def transform_PVI(data_PVI: dd.DataFrame) -> dd.DataFrame:
     transformed_data_PVI = data_PVI
     transformed_data_PVI['Issue Date'] = dd.to_datetime(transformed_data_PVI['Issue Date'],
-                                                        format='%m/%d/%Y')
+                                                        format='mixed')
     def transform_violation_time_instance(x: str):
         if not x or len(x) != 5 or ' ' in x:
             return ''
@@ -103,6 +103,7 @@ def transform_PE(data_PE: dd.DataFrame) -> dd.DataFrame:
                     :].reset_index(drop=True)
     filtered_data['Date'] = filtered_data.apply(
         lambda row: pd.date_range(start=row['Start Date/Time'], end=row['End Date/Time'], freq='D'), axis=1)
+
     filtered_data = filtered_data.explode('Date')
     filtered_data['Date'] = dd.to_datetime(filtered_data['Date'], format='%Y-%m-%d %H:%M:%S')
     filtered_data['Date'] = filtered_data['Date'].dt.date
