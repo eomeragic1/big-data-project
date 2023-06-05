@@ -107,7 +107,7 @@ def transform_PE(data_PE: dd.DataFrame) -> dd.DataFrame:
     filtered_data['Date'] = dd.to_datetime(filtered_data['Date'], format='%Y-%m-%d %H:%M:%S')
     filtered_data['Date'] = filtered_data['Date'].dt.date
     # Step 4: Group by date and borough, and compute the count of active events
-    result = filtered_data.groupby(['Date', 'Event Borough']).size().reset_index().compute()
+    result = filtered_data.groupby(['Date', 'Event Borough']).size().reset_index()
     result.columns = ['Date', 'Event Borough', 'Events Count']
     result = result.loc[(result['Date'] >= datetime.date(2022, 6, 1)) & (result['Date'] <= datetime.date.today()), :]
     result['Date'] = result['Date'].apply(pd.to_datetime)
@@ -115,6 +115,13 @@ def transform_PE(data_PE: dd.DataFrame) -> dd.DataFrame:
 
     return result
 
+def transform_S(data_S: dd.DataFrame) -> dd.DataFrame:
+    transformed_data_S = data_S
+    transformed_data_S = transformed_data_S.dropna(subset=['Police_precinct'])  # 9 examples where precinct is NA
+    transformed_data_S['Police_precinct'] = transformed_data_S['Police_precinct'].astype(int)
+    grouped = transformed_data_S.groupby('Police_precinct').size().reset_index()
+    grouped.columns = ['Police Precinct', 'Number of Schools']
+    return grouped
 
 def augment(data: dd.DataFrame,
             joining_data: dd.DataFrame,
@@ -154,6 +161,15 @@ def augment(data: dd.DataFrame,
             right_on='A - Address Street Name',
             how='left'
         )
+    elif joining_table_name == 'SCHOOLS':
+        joining_data = joining_data.add_prefix('S - ')
+        transformed_data = dd.merge(
+            left=data,
+            right=joining_data,
+            left_on='Violation Precinct',
+            right_on='S - Police Precinct',
+            how='left'
+        )
 
     return transformed_data
 
@@ -178,6 +194,8 @@ def extract_transform(table_name: str, data_path: str):
         transformed_data = transform_PE(data_PE=data)
     elif table_name == 'VIOLATION_COUNTY':
         transformed_data = data
+    elif table_name == 'SCHOOLS':
+        transformed_data = transform_S(data_S=data)
     else:
         raise RuntimeError('Unknown dataset.')
 
