@@ -21,12 +21,13 @@ def get_dask_cluster(config: Box,
 
     elif environment_name == 'hpc':
         cluster = dask_jobqueue.SLURMCluster(
+            queue='all',
             processes=config['cluster'][environment_name]['processes'],
             cores=config['cluster'][environment_name]['cores'],
             memory=config['cluster'][environment_name]['memory']
         )
 
-        cluster.scale(jobs=10)
+        cluster.scale(jobs=config['cluster'][environment_name]['jobs'])
         return cluster
 
     else:

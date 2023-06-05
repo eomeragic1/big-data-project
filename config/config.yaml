@@ -6,6 +6,7 @@ cluster:
     memory: 16GB
     cores: 16
     processes: 4
+    jobs: 4
 
 environment:
   local:
