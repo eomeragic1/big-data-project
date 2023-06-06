@@ -4,8 +4,8 @@ import dask.dataframe as dd
 import pandas as pd
 import numpy as np
 
+from util.custom.parking_violation_issued import rename_PVI
 from util.etl.extract import extract, DATA_METADATA
-
 
 def transform_LOB(data_LOB: dd.DataFrame) -> dd.DataFrame:
     transformed_data_LOB = data_LOB
@@ -20,10 +20,9 @@ def transform_LOB(data_LOB: dd.DataFrame) -> dd.DataFrame:
 
 
 def transform_PVI(data_PVI: dd.DataFrame) -> dd.DataFrame:
-    transformed_data_PVI = data_PVI
+    transformed_data_PVI = rename_PVI(data_PVI)
     transformed_data_PVI['Issue Date'] = dd.to_datetime(transformed_data_PVI['Issue Date'],
-                                                        format='mixed')
-
+                                                        format='%m/%d/%Y', errors='coerce')
     def transform_violation_time_instance(x: str):
         if not x or len(x) != 5 or ' ' in x:
             return ''
@@ -43,7 +42,7 @@ def transform_PVI(data_PVI: dd.DataFrame) -> dd.DataFrame:
     transformed_data_PVI = transformed_data_PVI.dropna(subset=['Violation Time'])
     transformed_data_PVI['Violation Time'] = dd.to_datetime(
         transformed_data_PVI['Violation Time'].apply(lambda x: f'{str(x) if x[:2] != "00" else "12" + x[2:]}M',
-                                                     meta=('Violation Time', str)), format='%I%M%p').apply(
+                                                        meta=('Violation Time', str)), format='%I%M%p', errors='coerce').apply(
         lambda x: pd.to_datetime(x, unit='s').hour, meta=('Violation Time', int))
 
     def transform_vehicle_expiration_date(data: pd.DataFrame):

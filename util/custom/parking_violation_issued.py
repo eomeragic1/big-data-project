@@ -1,3 +1,5 @@
+import dask.dataframe as dd
+
 TABLE_NAME_PARKING_VIOLATION_ISSUED = 'PARKING_VIOLATION_ISSUED'
 
 INCLUDED_COLUMNS_PARKING_VIOLATION_ISSUED = [
@@ -46,23 +48,23 @@ INCLUDED_COLUMNS_PARKING_VIOLATION_ISSUED = [
     'Double Parking Violation'
 ]
 DTYPES_PARKING_VIOLATION_ISSUED = {
-    'Summons Number': 'int',
+    'Summons Number': 'float64',
     'Plate ID': 'str',
     'Registration State': 'str',
     'Plate Type': 'str',
     'Issue Date': 'str',
-    'Violation Code': 'int',
+    'Violation Code': 'float64',
     'Vehicle Body Type': 'str',
     'Vehicle Make': 'str',
     'Issuing Agency': 'str',
-    'Street Code1': 'int',
-    'Street Code2': 'int',
-    'Street Code3': 'int',
+    'Street Code1': 'float64',
+    'Street Code2': 'float64',
+    'Street Code3': 'float64',
     'Vehicle Expiration Date': 'str',
     'Violation Location': 'str',
-    'Violation Precinct': 'int',
-    'Issuer Precinct': 'int',
-    'Issuer Code': 'int',
+    'Violation Precinct': 'float64',
+    'Issuer Precinct': 'float64',
+    'Issuer Code': 'float64',
     'Issuer Command': 'str',
     'Issuer Squad': 'str',
     'Violation Time': 'str',
@@ -81,12 +83,24 @@ DTYPES_PARKING_VIOLATION_ISSUED = {
     'To Hours In Effect': 'str',
     'Vehicle Color': 'str',
     'Unregistered Vehicle?': 'str',
-    'Vehicle Year': 'int',
+    'Vehicle Year': 'float64',  # Added to handle NA values
     'Meter Number': 'str',
-    'Feet From Curb': 'int',
+    'Feet From Curb': 'float64',
     'Violation Post Code': 'str',
     'Violation Description': 'str',
     'No Standing or Stopping Violation': 'str',
     'Hydrant Violation': 'str',
-    'Double Parking Violation': 'str'
+    'Double Parking Violation': 'str',
+    'Number': 'str',
+    'Street': 'str',
+    'Days Parking In Effect    ': 'str'
+
 }
+
+
+def rename_PVI(data: dd.DataFrame):
+    return data.rename(columns={
+        'Number': 'House Number',
+        'Street': 'Street Name',
+        'Days Parking In Effect    ': 'Days Parking In Effect'
+    })
