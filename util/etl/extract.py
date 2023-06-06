@@ -16,6 +16,7 @@ from util.custom.permitted_events import TABLE_NAME_PERMITTED_EVENTS, DTYPES_PER
 from util.custom.registered_vehicles import TABLE_NAME_REGISTERED_VEHICLES, DTYPES_REGISTERED_VEHICLES, \
     INCLUDED_COLUMNS_REGISTERED_VEHICLES
 from util.custom.schools import TABLE_NAME_SCHOOLS, DTYPES_SCHOOLS, INCLUDED_COLUMNS_SCHOOLS
+from util.custom.traffic import INCLUDED_COLUMNS_TRAFFIC, TABLE_NAME_TRAFFIC, DTYPES_TRAFFIC
 from util.custom.weather import TABLE_NAME_WEATHER, DTYPES_WEATHER, INCLUDED_COLUMNS_WEATHER
 
 DTYPES_VIOLATION_CODE = {
@@ -95,6 +96,15 @@ DATA_METADATA = {
         'default_column': list(DTYPES_SCHOOLS.keys())[1],
         'included_columns': INCLUDED_COLUMNS_SCHOOLS,
         'identifier_columns': ['BEDS'],
+        'date_column': None
+    },
+    TABLE_NAME_TRAFFIC: {
+        'filename': f'{TABLE_NAME_TRAFFIC}',
+        'dtypes': DTYPES_TRAFFIC,
+        'columns': list(DTYPES_TRAFFIC.keys()),
+        'default_column': list(DTYPES_TRAFFIC.keys())[1],
+        'included_columns': INCLUDED_COLUMNS_TRAFFIC,
+        'identifier_columns': ['Plaza ID', 'Date', 'Hour', 'Direction'],
         'date_column': None
     }
 }

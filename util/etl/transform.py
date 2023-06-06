@@ -23,6 +23,7 @@ def transform_PVI(data_PVI: dd.DataFrame) -> dd.DataFrame:
     transformed_data_PVI = data_PVI
     transformed_data_PVI['Issue Date'] = dd.to_datetime(transformed_data_PVI['Issue Date'],
                                                         format='mixed')
+
     def transform_violation_time_instance(x: str):
         if not x or len(x) != 5 or ' ' in x:
             return ''
@@ -35,13 +36,14 @@ def transform_PVI(data_PVI: dd.DataFrame) -> dd.DataFrame:
 
     def transform_violation_time_partition(data: pd.DataFrame):
         return data.apply(transform_violation_time_instance)
+
     transformed_data_PVI['Violation Time'] = transformed_data_PVI['Violation Time'].astype(str)
     transformed_data_PVI['Violation Time'] = transformed_data_PVI['Violation Time'].map_partitions(
         transform_violation_time_partition, meta=('Violation Time', str)).replace('', np.nan)
     transformed_data_PVI = transformed_data_PVI.dropna(subset=['Violation Time'])
     transformed_data_PVI['Violation Time'] = dd.to_datetime(
         transformed_data_PVI['Violation Time'].apply(lambda x: f'{str(x) if x[:2] != "00" else "12" + x[2:]}M',
-                                                        meta=('Violation Time', str)), format='%I%M%p').apply(
+                                                     meta=('Violation Time', str)), format='%I%M%p').apply(
         lambda x: pd.to_datetime(x, unit='s').hour, meta=('Violation Time', int))
 
     def transform_vehicle_expiration_date(data: pd.DataFrame):
@@ -116,6 +118,7 @@ def transform_PE(data_PE: dd.DataFrame) -> dd.DataFrame:
 
     return result
 
+
 def transform_S(data_S: dd.DataFrame) -> dd.DataFrame:
     transformed_data_S = data_S
     transformed_data_S = transformed_data_S.dropna(subset=['Police_precinct'])  # 9 examples where precinct is NA
@@ -123,6 +126,19 @@ def transform_S(data_S: dd.DataFrame) -> dd.DataFrame:
     grouped = transformed_data_S.groupby('Police_precinct').size().reset_index()
     grouped.columns = ['Police Precinct', 'Number of Schools']
     return grouped
+
+
+def transform_T(data_T: dd.DataFrame) -> dd.DataFrame:
+    transformed_data_T = data_T
+    transformed_data_T['Date'] = dd.to_datetime(transformed_data_T['Date'], format='%m/%d/%Y')
+    transformed_data_T = transformed_data_T.loc[transformed_data_T['Date'] >= datetime.datetime(2022, 6, 1), :]
+    transformed_data_T = transformed_data_T.groupby(['Date', 'Hour', 'Direction']).agg(
+        {'# Vehicles - E-ZPass': 'sum', '# Vehicles - VToll': 'sum'}).sum(axis=1).reset_index()
+    transformed_data_T.columns = ['Date', 'Hour', 'Direction', 'Average']
+    transformed_data_T = transformed_data_T.groupby(['Hour', 'Direction']).agg({'Average': 'mean'}).reset_index()
+    transformed_data_T.columns = ['Hour', 'Direction', 'Average']
+    return transformed_data_T
+
 
 def augment(data: dd.DataFrame,
             joining_data: dd.DataFrame,
@@ -197,6 +213,8 @@ def extract_transform(table_name: str, data_path: str):
         transformed_data = data
     elif table_name == 'SCHOOLS':
         transformed_data = transform_S(data_S=data)
+    elif table_name == 'TRAFFIC':
+        transformed_data = transform_T(data_T=data)
     else:
         raise RuntimeError('Unknown dataset.')
 
