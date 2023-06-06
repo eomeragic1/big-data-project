@@ -41,8 +41,11 @@ def etl_augmentation(list_table_name: list):
     start_time = time.time()
 
     data = read_parquet_table(table_name='PARKING_VIOLATION_ISSUED')
-
+    # For HDF5:
+    # data = read_hdf5_table(table_name='PARKING_VIOLATIN_ISSUED')
     for table_name in list_table_name:
+        # FOR HDF5:
+        # joining_data = read_hdf5_table(table_name=table_name)
         joining_data = read_parquet_table(table_name=table_name)
         data = augment(data=data,
                        joining_data=joining_data,

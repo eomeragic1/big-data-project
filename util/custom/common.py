@@ -9,6 +9,11 @@ def read_parquet_table(table_name: str,
                        content_root_path: str = '.'):
     return dd.read_parquet(f'{content_root_path}/{data_path}/{table_name}.parquet')
 
+def read_hdf5_table(table_name: str,
+                    data_path: str = 'data/hdf5',
+                    content_root_path: str = '.'):
+    return dd.read_hdf(f'{content_root_path}/{data_path}/{table_name}-*.hdf')
+
 
 def get_dask_cluster(config: Box,
                      environment_name: str) -> Client:
