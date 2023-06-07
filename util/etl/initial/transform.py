@@ -7,6 +7,7 @@ import numpy as np
 from util.etl.initial.table.parking_violation_issued import rename_PVI
 from util.etl.initial.extract import extract, DATA_METADATA
 
+
 def transform_LOB(data_LOB: dd.DataFrame) -> dd.DataFrame:
     transformed_data_LOB = data_LOB
     transformed_data_LOB = transformed_data_LOB[transformed_data_LOB['Address State'] == 'NY']
@@ -23,6 +24,10 @@ def transform_PVI(data_PVI: dd.DataFrame) -> dd.DataFrame:
     transformed_data_PVI = rename_PVI(data_PVI)
     transformed_data_PVI['Issue Date'] = dd.to_datetime(transformed_data_PVI['Issue Date'],
                                                         format='%m/%d/%Y', errors='coerce')
+    transformed_data_PVI = transformed_data_PVI.loc[
+                           (transformed_data_PVI['Issue Date'] >= datetime.datetime(2013, 6, 1)) & (
+                                       transformed_data_PVI['Date'] <= datetime.datetime.today()), :]
+
     def transform_violation_time_instance(x: str):
         if not x or len(x) != 5 or ' ' in x:
             return ''
@@ -42,7 +47,8 @@ def transform_PVI(data_PVI: dd.DataFrame) -> dd.DataFrame:
     transformed_data_PVI = transformed_data_PVI.dropna(subset=['Violation Time'])
     transformed_data_PVI['Violation Time'] = dd.to_datetime(
         transformed_data_PVI['Violation Time'].apply(lambda x: f'{str(x) if x[:2] != "00" else "12" + x[2:]}M',
-                                                        meta=('Violation Time', str)), format='%I%M%p', errors='coerce').apply(
+                                                     meta=('Violation Time', str)), format='%I%M%p',
+        errors='coerce').apply(
         lambda x: pd.to_datetime(x, unit='s').hour, meta=('Violation Time', int))
 
     def transform_vehicle_expiration_date(data: pd.DataFrame):
@@ -112,7 +118,8 @@ def transform_PE(data_PE: dd.DataFrame) -> dd.DataFrame:
     result = filtered_data.groupby(['Date', 'Event Borough']).size().reset_index()
     result.columns = ['Date', 'Event Borough', 'Events Count']
     result['Date'] = dd.to_datetime(result['Date'])
-    result = result.loc[(result['Date'] >= datetime.datetime(2014, 6, 1)) & (result['Date'] <= datetime.datetime.today()), :]
+    result = result.loc[
+             (result['Date'] >= datetime.datetime(2013, 6, 1)) & (result['Date'] <= datetime.datetime.today()), :]
     result = result.sort_values(by=['Date', 'Event Borough'])
 
     return result
@@ -130,7 +137,7 @@ def transform_S(data_S: dd.DataFrame) -> dd.DataFrame:
 def transform_T(data_T: dd.DataFrame) -> dd.DataFrame:
     transformed_data_T = data_T
     transformed_data_T['Date'] = dd.to_datetime(transformed_data_T['Date'], format='%m/%d/%Y')
-    transformed_data_T = transformed_data_T.loc[transformed_data_T['Date'] >= datetime.datetime(2022, 6, 1), :]
+    transformed_data_T = transformed_data_T.loc[transformed_data_T['Date'] >= datetime.datetime(2013, 6, 1), :]
     transformed_data_T = transformed_data_T.groupby(['Date', 'Hour', 'Direction']).agg(
         {'# Vehicles - E-ZPass': 'sum', '# Vehicles - VToll': 'sum'}).sum(axis=1).reset_index()
     transformed_data_T.columns = ['Date', 'Hour', 'Direction', 'Average']
@@ -218,7 +225,6 @@ def extract_transform(table_name: str, data_path: str):
         transformed_data = transform_T(data_T=data)
     else:
         raise RuntimeError('Unknown dataset.')
-
 
     transformed_data = transformed_data[DATA_METADATA[table_name]['included_columns']]
     return transformed_data

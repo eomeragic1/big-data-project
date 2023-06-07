@@ -48,4 +48,6 @@ if __name__ == '__main__':
     with Client(cluster, timeout='120s') as client:
         print('Dask client successfully initialized')
 
-        generate_analysis_plots(analysis_dir='./assets')
+        generate_analysis_plots(analysis_dir='./assets',
+                                data_path=config['environment'][environment_name]['data_output_dir'],
+                                content_root_path='' if environment_name == 'hpc' else './')
