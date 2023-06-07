@@ -14,6 +14,6 @@ environment:
     data_original_dir: data/csv/original_old
     data_output_dir: data
   hpc:
-    data_augmentation_dir: /d/hpc/projects/FRI/bigdata/students/data_ermin_and_luka
+    data_augmentation_dir: /d/hpc/projects/FRI/bigdata/students/data_ermin_and_luka/augmentation
     data_original_dir: /d/hpc/projects/FRI/bigdata/data/NYTickets
     data_output_dir: /d/hpc/projects/FRI/bigdata/students/data_ermin_and_luka/processed
