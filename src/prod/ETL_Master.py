@@ -59,8 +59,11 @@ if __name__ == '__main__':
     cluster = get_dask_cluster(config=config,
                                environment_name=environment_name)
 
-    with Client(cluster, timeout='120s') as client:
-        print('Dask client successfully initialized')
+    with Client(cluster,
+                timeout='120s') as client:
+        print(f'Dask client successfully initialized')
+        print(f'Scheduler: {cluster.scheduler.address}')
+        print(f'Cluster: {cluster.dashboard_link}')
 
         # Perform the initial data transformations
         if args.data == 'All':

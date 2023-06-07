@@ -217,10 +217,6 @@ def extract_transform(table_name: str, data_path: str):
     else:
         raise RuntimeError('Unknown dataset.')
 
-    if DATA_METADATA[table_name]['date_column'] is not None:
-        transformed_data.loc[
-        (transformed_data[DATA_METADATA[table_name]['date_column']] > datetime.datetime(2022, 6, 1)) & (
-                transformed_data[DATA_METADATA[table_name]['date_column']] < datetime.datetime(2023, 5, 31)), :]
 
     transformed_data = transformed_data[DATA_METADATA[table_name]['included_columns']]
     return transformed_data

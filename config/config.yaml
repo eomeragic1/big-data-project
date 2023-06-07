@@ -11,7 +11,7 @@ cluster:
 environment:
   local:
     data_augmentation_dir: data/csv/augmentation
-    data_original_dir: data/csv/original
+    data_original_dir: data/csv/original_old
     data_output_dir: data
   hpc:
     data_augmentation_dir: /d/hpc/home/lz3057/data/augmentation
