@@ -45,9 +45,11 @@ def generate_analysis_plots(analysis_dir: str):
     print('Finished generating first plot')
     ## Second plot - Timeline chart, amount of tickets per day for each borough
 
-    violations_per_day = augmented_data[['Issue Date', 'Violation County Name']].groupby(['Issue Date', 'Violation County Name']).size().reset_index().compute()
-    violations_per_day.columns = ['Issue Date', 'Violation County', 'Counts']
-    violations_per_day_pivot = violations_per_day.pivot(index='Issue Date', columns='Violation County', values='Counts')
+    violations_per_day = augmented_data[['Issue Date', 'Violation County Name']]
+    violations_per_day = violations_per_day.groupby([violations_per_day['Issue Date'].dt.year.rename('Year'), violations_per_day['Issue Date'].dt.month.rename('Month'), 'Violation County']).size().reset_index().compute()
+    violations_per_day.columns = ['Year', 'Month', 'Violation County', 'Counts']
+    violations_per_day['Issue Date'] = pd.to_datetime(violations_per_day['Year'].astype(str)+'-'+violations_per_day['Month'].astype(str)+'-1')
+    violations_per_day_pivot = violations_per_day[['Issue Date', 'Violation County', 'Counts']].pivot(index='Issue Date', columns='Violation County', values='Counts')
 
     population_density = {'Manhattan': 28872,
                   'Brooklyn': 15227,
@@ -85,4 +87,6 @@ def generate_analysis_plots(analysis_dir: str):
     plt.legend(loc='upper right')
     plt.savefig(analysis_dir+'/plot_3.png', facecolor='white', bbox_inches='tight')
     print('Finished generating third plot')
+
+    ## CONTINUE WITH OTHER PLOTS, TRY RUNNING ALL THE AUGMENTS ON CLUSTER, WRITE REPORT
 

@@ -89,6 +89,8 @@ if __name__ == '__main__':
 
         # Perform data augmentation on NY tickets dataset
         if args.augmentation:
-            etl_augmentation(list_table_name=list(filter(lambda x: x != 'PARKING_VIOLATION_ISSUED', LIST_TABLE_NAME)))
+            etl_augmentation(list_table_name=list(filter(lambda x: x != 'PARKING_VIOLATION_ISSUED', LIST_TABLE_NAME)),
+                             data_path=config['environment'][environment_name]['data_augmentation_dir'],
+                             content_root_path='/' if environment_name == 'hpc' else '.')
 
         input('Press enter to close Dask cluster...')
