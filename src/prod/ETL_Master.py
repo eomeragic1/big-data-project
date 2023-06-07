@@ -5,6 +5,7 @@ import sys
 
 from box import Box
 from dask.distributed import Client
+from distributed import performance_report
 
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
@@ -65,32 +66,35 @@ if __name__ == '__main__':
 
     with Client(cluster,
                 timeout='120s') as client:
+
         print(f'Dask client successfully initialized')
         print(f'Scheduler: {cluster.scheduler.address}')
         print(f'Cluster: {cluster.dashboard_link}')
+        with performance_report(filename=f"assets/Performance Reports/Total-Performance-Report.html"):
 
-        # Perform the initial data transformations
-        if args.data == 'All':
-            etl_single_table_transformations(
-                list_table_name=LIST_TABLE_NAME,
-                config=config,
-                environment_name=environment_name
-            )
-        elif args.data in LIST_TABLE_NAME:
-            list_table_name = [args.data]
-            etl_single_table_transformations(
-                list_table_name=list_table_name,
-                config=config,
-                environment_name=environment_name
-            )
-        else:
-            raise argparse.ArgumentError(argument=arg_data,
-                                         message='Invalid argument value for data. Add the "-h" option to see argument specifications.')
+            # Perform the initial data transformations
+            if args.data == 'All':
+                etl_single_table_transformations(
+                    list_table_name=LIST_TABLE_NAME,
+                    config=config,
+                    environment_name=environment_name
+                )
+            elif args.data in LIST_TABLE_NAME:
+                list_table_name = [args.data]
+                etl_single_table_transformations(
+                    list_table_name=list_table_name,
+                    config=config,
+                    environment_name=environment_name
+                )
+            else:
+                raise argparse.ArgumentError(argument=arg_data,
+                                             message='Invalid argument value for data. Add the "-h" option to see argument specifications.')
 
         # Perform data augmentation on NY tickets dataset
         if args.augmentation:
-            etl_augmentation(list_table_name=list(filter(lambda x: x != 'PARKING_VIOLATION_ISSUED', LIST_TABLE_NAME)),
-                             data_path=config['environment'][environment_name]['data_output_dir'],
-                             content_root_path='' if environment_name == 'hpc' else './')
+            with performance_report(filename=f"assets/Performance Reports/Augmentation-Performance-Report.html"):
+                etl_augmentation(
+                    list_table_name=list(filter(lambda x: x != 'PARKING_VIOLATION_ISSUED', LIST_TABLE_NAME)),
+                    data_path=config['environment'][environment_name]['data_output_dir'],
+                    content_root_path='' if environment_name == 'hpc' else './')
 
-        input('Press enter to close Dask cluster...')

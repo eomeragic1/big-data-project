@@ -7,9 +7,9 @@ from util.etl.extract import DATA_METADATA
 
 LIST_TABLE_NAME = [
     'LEGALLY_OPERATING_BUSINESS',
-    'PARKING_VIOLATION_ISSUED',
-    'WEATHER',
-    'EVENT'
+    # 'PARKING_VIOLATION_ISSUED',
+    # 'WEATHER',
+    # 'EVENT'
 ]
 
 
