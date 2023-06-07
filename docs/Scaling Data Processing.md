@@ -148,7 +148,7 @@ To connect to the Dask dashboard on remote cluster, we must first get the link f
 
 ![Dashboard Link.png](Dashboard Link.png)
 
-We activate SSH tunneling by running the following command:
+We activate SSH tunneling by running an additional SSH connection with the following command:
 
 ```shell
  ssh -L 8000:<REMOTE_DASK_DASHBOARD_LINK> <SLURM_CLUSTER_USERNAME>@hpc-login.arnes.si
