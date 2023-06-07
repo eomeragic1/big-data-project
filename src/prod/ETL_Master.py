@@ -97,4 +97,5 @@ if __name__ == '__main__':
                     list_table_name=list(filter(lambda x: x != 'PARKING_VIOLATION_ISSUED', LIST_TABLE_NAME)),
                     data_path=config['environment'][environment_name]['data_output_dir'],
                     content_root_path='' if environment_name == 'hpc' else './')
-
+        print('Press enter to close the cluster...')
+        input('Press enter to close the cluster...')
