@@ -40,13 +40,13 @@ def etl_augmentation(list_table_name: list, data_path: str, content_root_path: s
     tracemalloc.start()
     start_time = time.time()
 
-    data = read_parquet_table(table_name='PARKING_VIOLATION_ISSUED', data_path=data_path, content_root_path=content_root_path)
+    data = read_parquet_table(table_name='PARKING_VIOLATION_ISSUED', data_path=data_path+'/parquet', content_root_path=content_root_path)
     # For HDF5:
     # data = read_hdf5_table(table_name='PARKING_VIOLATIN_ISSUED')
     for table_name in list_table_name:
         # FOR HDF5:
         # joining_data = read_hdf5_table(table_name=table_name)
-        joining_data = read_parquet_table(table_name=table_name, data_path=data_path, content_root_path=content_root_path)
+        joining_data = read_parquet_table(table_name=table_name, data_path=data_path+'/parquet', content_root_path=content_root_path)
         data = augment(data=data,
                        joining_data=joining_data,
                        joining_table_name=table_name)
