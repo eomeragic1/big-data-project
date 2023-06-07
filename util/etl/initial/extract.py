@@ -2,22 +2,22 @@ import glob
 
 import dask.dataframe as dd
 
-from util.custom.event import TABLE_NAME_EVENT, DTYPES_EVENT, INCLUDED_COLUMNS_EVENT
-from util.custom.legally_operating_business import \
+from util.etl.initial.table.event import TABLE_NAME_EVENT, DTYPES_EVENT, INCLUDED_COLUMNS_EVENT
+from util.etl.initial.table.legally_operating_business import \
     DTYPES_LEGALLY_OPERATING_BUSINESS, \
     TABLE_NAME_LEGALLY_OPERATING_BUSINESS, \
     INCLUDED_COLUMNS_LEGALLY_OPERATING_BUSINESS
-from util.custom.parking_violation_issued import \
+from util.etl.initial.table.parking_violation_issued import \
     DTYPES_PARKING_VIOLATION_ISSUED, \
     TABLE_NAME_PARKING_VIOLATION_ISSUED, \
     INCLUDED_COLUMNS_PARKING_VIOLATION_ISSUED
-from util.custom.permitted_events import TABLE_NAME_PERMITTED_EVENTS, DTYPES_PERMITTED_EVENTS, \
+from util.etl.initial.table.permitted_events import TABLE_NAME_PERMITTED_EVENTS, DTYPES_PERMITTED_EVENTS, \
     INCLUDED_COLUMNS_PERMITTED_EVENTS
-from util.custom.registered_vehicles import TABLE_NAME_REGISTERED_VEHICLES, DTYPES_REGISTERED_VEHICLES, \
+from util.etl.initial.table.registered_vehicles import TABLE_NAME_REGISTERED_VEHICLES, DTYPES_REGISTERED_VEHICLES, \
     INCLUDED_COLUMNS_REGISTERED_VEHICLES
-from util.custom.schools import TABLE_NAME_SCHOOLS, DTYPES_SCHOOLS, INCLUDED_COLUMNS_SCHOOLS
-from util.custom.traffic import INCLUDED_COLUMNS_TRAFFIC, TABLE_NAME_TRAFFIC, DTYPES_TRAFFIC
-from util.custom.weather import TABLE_NAME_WEATHER, DTYPES_WEATHER, INCLUDED_COLUMNS_WEATHER
+from util.etl.initial.table.schools import TABLE_NAME_SCHOOLS, DTYPES_SCHOOLS, INCLUDED_COLUMNS_SCHOOLS
+from util.etl.initial.table.traffic import INCLUDED_COLUMNS_TRAFFIC, TABLE_NAME_TRAFFIC, DTYPES_TRAFFIC
+from util.etl.initial.table.weather import TABLE_NAME_WEATHER, DTYPES_WEATHER, INCLUDED_COLUMNS_WEATHER
 
 DTYPES_VIOLATION_CODE = {
     'Violation County Code': 'str',

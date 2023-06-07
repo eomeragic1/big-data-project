@@ -1,7 +1,6 @@
 import dash
 import dash_bootstrap_components as dbc
 from dash import dcc, html
-from dask import dataframe as dd
 
 import plotly.express as px
 import numpy as np
@@ -9,7 +8,7 @@ import datetime
 import dask.dataframe as dd
 
 from util.custom.common import read_parquet_table
-from util.custom.parking_violation_issued import TABLE_NAME_PARKING_VIOLATION_ISSUED
+from util.etl.initial.table.parking_violation_issued import TABLE_NAME_PARKING_VIOLATION_ISSUED
 
 
 def content_analysis():

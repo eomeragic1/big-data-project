@@ -4,8 +4,8 @@ import dask.dataframe as dd
 import pandas as pd
 import numpy as np
 
-from util.custom.parking_violation_issued import rename_PVI
-from util.etl.extract import extract, DATA_METADATA
+from util.etl.initial.table.parking_violation_issued import rename_PVI
+from util.etl.initial.extract import extract, DATA_METADATA
 
 def transform_LOB(data_LOB: dd.DataFrame) -> dd.DataFrame:
     transformed_data_LOB = data_LOB

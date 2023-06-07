@@ -4,9 +4,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from dash import dcc, html
 from dash.html import Figure
-from dask import dataframe as dd
 
-from util.etl.extract import DATA_METADATA
+from util.etl.initial.extract import DATA_METADATA
 
 
 def content_table_health_check():

@@ -14,7 +14,7 @@ sys.path.insert(0, parent_dir)
 sys.path.insert(0, parent_parent_dir)
 
 from util.custom.common import get_dask_cluster
-from util.etl.etl import etl_single_table_transformations, etl_augmentation
+from util.etl.jobs import etl_single_table_transformations, etl_augmentation
 
 LIST_TABLE_NAME = [
     'LEGALLY_OPERATING_BUSINESS',

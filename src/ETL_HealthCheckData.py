@@ -3,7 +3,7 @@ from box import Box
 from dask import dataframe as dd
 
 from util.custom.common import read_parquet_table, dask_config
-from util.etl.extract import DATA_METADATA
+from util.etl.initial.extract import DATA_METADATA
 
 LIST_TABLE_NAME = [
     'LEGALLY_OPERATING_BUSINESS',

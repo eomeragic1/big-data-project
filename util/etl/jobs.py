@@ -5,8 +5,8 @@ from box import Box
 from distributed import performance_report
 
 from util.custom.common import read_parquet_table
-from util.etl.load import load
-from util.etl.transform import extract_transform, augment
+from util.etl.initial.load import load
+from util.etl.initial.transform import extract_transform, augment
 
 
 def etl_single_table_transformations(list_table_name: list,
