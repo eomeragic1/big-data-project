@@ -146,7 +146,7 @@ srun python src/prod/ETL_Master.py --env hpc <ADDITIONAL_SETTINGS>
 
 To connect to the Dask dashboard on remote cluster, we must first get the link from the dashboard, which is printed while running the ETL Python script.
 
-![Dashboard Link.png](../assets/Dashboard%20Link.png)
+![Dashboard Link](../assets/Dashboard%20Link.png)
 
 We activate SSH tunneling by running an additional SSH connection with the following command:
 
@@ -157,3 +157,24 @@ We activate SSH tunneling by running an additional SSH connection with the follo
 In the image above, we would replace the variable **<REMOTE_DASK_DASHBOARD_LINK>** with `153.5.72.117:8787`.
 
 The remote Dask dashboard is now running locally on [localhost:8000](localhost:8000).
+
+### Connecting to Jupyter Lab dashboard via SSH tunneling
+Say, you wish to tunnel the Jupyter Lab dashboard from localhost, port 8341 on remote cluster to 8100 on local machine.
+
+Connect to remote desktop by running the following command.
+```shell
+ ssh -L 8100:localhost:8341 <SLURM_CLUSTER_USERNAME>@hpc-login.arnes.si
+```
+
+Once you are connected to the remote desktop, run the Jupyter Lab:
+```shell
+jupyter lab --port=8341
+```
+You will notice that once the Jupyter Lab starts successfully, it will output a URL with token that you will need in order to login to the Jupyter Lab dashboard locally. See example below:
+
+![Jupyter Lab Token](../assets/Jupyter%20Lab%20Token.png)
+
+Now, you can access the Jupyter Lab dashboard locally at [localhost:8341/token=TOKEN](localhost:8341/token=TOKEN) with the actual token.
+
+
+
