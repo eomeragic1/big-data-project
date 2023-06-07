@@ -146,7 +146,7 @@ srun python src/prod/ETL_Master.py --env hpc <ADDITIONAL_SETTINGS>
 
 To connect to the Dask dashboard on remote cluster, we must first get the link from the dashboard, which is printed while running the ETL Python script.
 
-![Dashboard Link.png](Dashboard Link.png)
+![Dashboard Link.png](../assets/Dashboard%20Link.png)
 
 We activate SSH tunneling by running an additional SSH connection with the following command:
 

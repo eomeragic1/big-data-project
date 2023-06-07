@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     # Uploading the 'test' directory with its content in the
     # '/home/user/dump' remote directory
-    scp.put(files='../../data/csv/augmentation',
+    scp.put(files='data/csv/augmentation',
             recursive=True,
             remote_path=config['environment']['hpc']['data_augmentation_dir'],)
 
