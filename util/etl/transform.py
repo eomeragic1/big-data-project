@@ -186,6 +186,8 @@ def augment(data: dd.DataFrame,
             right_on='S - Police Precinct',
             how='left'
         )
+    else:
+        return data
 
     return transformed_data
 
