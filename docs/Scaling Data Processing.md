@@ -113,7 +113,7 @@ To setup the environment, we clone the GitHub repository. Since it is a private 
 token.
 
 ```shell
-git clone https://<USERNAME>:<TOKEN>@github.com/eeomeragic1/big-data-project.git
+git clone https://<USERNAME>:<TOKEN>@github.com/eomeragic1/big-data-project.git
 ```
 
 We create a new Anaconda environment with Python version 3.8.16.
@@ -141,3 +141,19 @@ If we wish to change the scaling settings, we can edit the `config/config.yaml` 
 ```shell
 srun python src/prod/ETL_Master.py --env hpc <ADDITIONAL_SETTINGS>
 ```
+
+### Connecting to Dask dashboard via SSH tunneling
+
+To connect to the Dask dashboard on remote cluster, we must first get the link from the dashboard, which is printed while running the ETL Python script.
+
+![Dashboard Link.png](Dashboard Link.png)
+
+We activate SSH tunneling by running the following command:
+
+```shell
+ ssh -L 8000:<REMOTE_DASK_DASHBOARD_LINK> <SLURM_CLUSTER_USERNAME>@hpc-login.arnes.si
+```
+
+In the image above, we would replace the variable **<REMOTE_DASK_DASHBOARD_LINK>** with `153.5.72.117:8787`.
+
+The remote Dask dashboard is now running locally on [localhost:8000](localhost:8000).
