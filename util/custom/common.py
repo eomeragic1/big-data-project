@@ -6,8 +6,8 @@ from dask.distributed import Client, LocalCluster
 
 def read_parquet_table(table_name: str,
                        data_path: str = 'data/parquet',
-                       content_root_path: str = '.'):
-    return dd.read_parquet(f'{content_root_path}/{data_path}/{table_name}.parquet')
+                       content_root_path: str = './'):
+    return dd.read_parquet(f'{content_root_path}{data_path}/{table_name}.parquet')
 
 def read_hdf5_table(table_name: str,
                     data_path: str = 'data/hdf5',
