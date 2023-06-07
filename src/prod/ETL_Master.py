@@ -18,8 +18,12 @@ from util.etl.etl import etl_single_table_transformations, etl_augmentation
 LIST_TABLE_NAME = [
     'LEGALLY_OPERATING_BUSINESS',
     'PARKING_VIOLATION_ISSUED',
+    'VIOLATION_COUNTY',
+    'PERMITTED_EVENTS',
+    'SCHOOLS',
+    'TRAFFIC',
+    'REGISTERED_VEHICLES',
     'WEATHER',
-    'EVENT'
 ]
 
 if __name__ == '__main__':
