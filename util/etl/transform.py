@@ -111,8 +111,8 @@ def transform_PE(data_PE: dd.DataFrame) -> dd.DataFrame:
     # Step 4: Group by date and borough, and compute the count of active events
     result = filtered_data.groupby(['Date', 'Event Borough']).size().reset_index()
     result.columns = ['Date', 'Event Borough', 'Events Count']
-    result = result.loc[(result['Date'] >= datetime.date(2022, 6, 1)) & (result['Date'] <= datetime.date.today()), :]
-    result['Date'] = result['Date'].apply(pd.to_datetime)
+    result['Date'] = dd.to_datetime(result['Date'])
+    result = result.loc[(result['Date'] >= datetime.datetime(2014, 6, 1)) & (result['Date'] <= datetime.datetime.today()), :]
     result = result.sort_values(by=['Date', 'Event Borough'])
 
     return result
