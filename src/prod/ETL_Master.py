@@ -86,3 +86,5 @@ if __name__ == '__main__':
         # Perform data augmentation on NY tickets dataset
         if args.augmentation:
             etl_augmentation(list_table_name=list(filter(lambda x: x != 'PARKING_VIOLATION_ISSUED', LIST_TABLE_NAME)))
+
+        input('Press enter to close Dask cluster...')
