@@ -5,6 +5,8 @@ INCLUDED_COLUMNS_WEATHER = [
     'Time',
     'Temperature',
     'Precipitation',
+    'Rain',
+    'Snowfall',
     'Borough'
 ]
 DTYPES_WEATHER = {

@@ -228,13 +228,14 @@ def generate_analysis_plots(analysis_dir: str, data_path: str, content_root_path
         columns={0: 'Violations Temperature Count'})
 
     weather_data = read_parquet_table('WEATHER', data_path=data_path + '/parquet',
-                                      content_root_path=content_root_path).dropna(subset=['Temperature'])
-    weather_data['Temperature'] = weather_data['Temperature'].astype(float).apply(lambda x: round(x),
+                                      content_root_path=content_root_path)
+    weather_temperature_data = weather_data.dropna(subset=['Temperature'])
+    weather_temperature_data['Temperature'] = weather_temperature_data['Temperature'].astype(float).apply(lambda x: round(x),
                                                                                   meta=('Temperature', int))
-    weather_data = weather_data.groupby(['Temperature', 'Borough']).size().reset_index().rename(
+    weather_temperature_data = weather_temperature_data.groupby(['Temperature', 'Borough']).size().reset_index().rename(
         columns={0: 'Total Temperature Count'})
 
-    merged_df = temperature_data.merge(weather_data, left_on=['W - Temperature', 'Violation County Name'],
+    merged_df = temperature_data.merge(weather_temperature_data, left_on=['W - Temperature', 'Violation County Name'],
                                        right_on=['Temperature', 'Borough'], how='inner')
     merged_df['Ratio'] = merged_df['Violations Temperature Count'] / merged_df['Total Temperature Count']
 
@@ -250,3 +251,63 @@ def generate_analysis_plots(analysis_dir: str, data_path: str, content_root_path
     plt.grid(0.6)
     plt.savefig(analysis_dir + '/plot_8.png', facecolor='white', bbox_inches='tight')
     print('Finished generating eight plot')
+
+    ## One more for rain
+
+    rain_data = augmented_data[['W - Rain', 'Violation County Name']].dropna(subset=['W - Rain'])
+    rain_data['W - Rain'] = rain_data['W - Rain'].astype(float)
+    rain_data = rain_data.groupby(
+        ['W - Rain', 'Violation County Name']).size().reset_index().rename(
+        columns={0: 'Violations Rain Count'})
+
+    weather_rain_data = weather_data.dropna(subset=['Rain'])
+    weather_rain_data['Rain'] = weather_rain_data['Rain'].astype(float)
+    weather_rain_data = weather_rain_data.groupby(['Rain', 'Borough']).size().reset_index().rename(
+        columns={0: 'Total Rain Count'})
+
+    merged_df = rain_data.merge(weather_rain_data, left_on=['W - Rain', 'Violation County Name'],
+                                       right_on=['Rain', 'Borough'], how='inner')
+    merged_df['Ratio'] = merged_df['Violations Rain Count'] / merged_df['Total Rain Count']
+
+    merged_df = merged_df.sort_values(by=['Rain', 'Borough']).compute()
+    fig, ax = plt.subplots()
+    for label, group in merged_df.groupby(['Borough']):
+        group.plot(x='Rain', y='Ratio', label=label, ax=ax)
+    plt.xlabel('Rain (mm)')
+    plt.ylabel('Ratio')
+    plt.title(
+        'Ratio of the amount of parking violations issued \n during each rain precipitation range over \n the total amount of times that rain precipitation range\n was present')
+    plt.legend()
+    plt.grid(0.6)
+    plt.savefig(analysis_dir + '/plot_9.png', facecolor='white', bbox_inches='tight')
+    print('Finished generating ninth plot')
+
+    ## One more for snowfall
+
+    snowfall_data = augmented_data[['W - Snowfall', 'Violation County Name']].dropna(subset=['W - Snowfall'])
+    snowfall_data['W - Snowfall'] = snowfall_data['W - Snowfall'].astype(float)
+    snowfall_data = snowfall_data.groupby(
+        ['W - Snowfall', 'Violation County Name']).size().reset_index().rename(
+        columns={0: 'Violations Snowfall Count'})
+
+    weather_snowfall_data = weather_data.dropna(subset=['Snowfall'])
+    weather_snowfall_data['Rain'] = weather_snowfall_data['Snowfall'].astype(float)
+    weather_snowfall_data = weather_snowfall_data.groupby(['Snowfall', 'Borough']).size().reset_index().rename(
+        columns={0: 'Total Snowfall Count'})
+
+    merged_df = snowfall_data.merge(weather_snowfall_data, left_on=['W - Snowfall', 'Violation County Name'],
+                                right_on=['Snowfall', 'Borough'], how='inner')
+    merged_df['Ratio'] = merged_df['Violations Snowfall Count'] / merged_df['Total Snowfall Count']
+
+    merged_df = merged_df.sort_values(by=['Snowfall', 'Borough']).compute()
+    fig, ax = plt.subplots()
+    for label, group in merged_df.groupby(['Borough']):
+        group.plot(x='Snowfall', y='Ratio', label=label, ax=ax)
+    plt.xlabel('Snowfall (cm)')
+    plt.ylabel('Ratio')
+    plt.title(
+        'Ratio of the amount of parking violations issued \n during each snow precipitation range over \n the total amount of times that snow precipitation range\n was present')
+    plt.legend()
+    plt.grid(0.6)
+    plt.savefig(analysis_dir + '/plot_10.png', facecolor='white', bbox_inches='tight')
+    print('Finished generating tenth plot')
