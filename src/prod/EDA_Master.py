@@ -13,7 +13,7 @@ sys.path.insert(0, parent_dir)
 sys.path.insert(0, parent_parent_dir)
 
 from util.custom.common import get_dask_cluster
-from util.analysis.analysis import generate_analysis_plots
+from util.eda.eda import generate_analysis_plots
 
 
 
