@@ -24,7 +24,6 @@ app.layout = html.Div([
     html.H1('New York Parking Violations: Dashboard'),
     dcc.Tabs(id="tabs-input", value='tab-table-health-check', children=[
         dcc.Tab(label='Table Health Check', value='tab-table-health-check'),
-        dcc.Tab(label='Data Augmentation Quality', value='tab-custom-augmentation-quality'),
         dcc.Tab(label='Analysis', value='tab-analysis'),
     ]),
     html.Div(id='tab-content')
@@ -36,8 +35,6 @@ app.layout = html.Div([
 def render_content(tab_name: str):
     if tab_name == 'tab-table-health-check':
         return content_table_health_check()
-    elif tab_name == 'tab-custom-augmentation-quality':
-        return content_data_augmentation_quality()
     elif tab_name == 'tab-analysis':
         return content_analysis()
 
