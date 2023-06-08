@@ -21,12 +21,12 @@ def read_hdf5_table(table_name: str,
                     data_path: str = 'data/hdf5',
                     content_root_path: str = '.',
                     engine: str = 'dask'):
-    if engine == 'dask':
-        return dd.read_hdf(f'{content_root_path}/{data_path}/{table_name}-*.hdf')
-    elif engine == 'pandas':
-        return pd.read_hdf(f'{content_root_path}/{data_path}/{table_name}-*.hdf')
-    else:
+    data = dd.read_hdf(pattern=f'{content_root_path}/{data_path}/{table_name}-*.hdf', key='/data')
+    if engine == 'pandas':
+        data = data.compute()
+    elif engine != 'dask':
         raise RuntimeError('Unknown engine to read HDF5 table.')
+    return data
 
 
 def get_dask_cluster(config: Box,
