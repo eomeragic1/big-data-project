@@ -66,7 +66,7 @@ def transform_E(data_E: dd.DataFrame) -> dd.DataFrame:
     transformed_data_E = data_E
     transformed_data_E['date'] = dd.to_datetime(transformed_data_E['date'],
                                                 format='%m/%d/%Y')
-    return data_E
+    return transformed_data_E
 
 
 def transform_W(data_W: dd.DataFrame) -> dd.DataFrame:
@@ -75,7 +75,8 @@ def transform_W(data_W: dd.DataFrame) -> dd.DataFrame:
     transformed_data_W['Date'] = transformed_data_W['Time'].dt.date
     transformed_data_W['Time'] = transformed_data_W['Time'].dt.hour
     transformed_data_W['Date'] = dd.to_datetime(transformed_data_W['Date'], format='%Y-%m-%d')
-    return data_W
+    transformed_data_W['Borough'] = transformed_data_W['Borough'].replace('StatenIsland', 'Staten Island')
+    return transformed_data_W
 
 
 def transform_RV(data_RV: dd.DataFrame) -> dd.DataFrame:
@@ -223,6 +224,8 @@ def extract_transform(table_name: str, data_path: str):
         transformed_data = transform_S(data_S=data)
     elif table_name == 'TRAFFIC':
         transformed_data = transform_T(data_T=data)
+    elif table_name == 'PARKING_VIOLATION_CODES':
+        transformed_data = data
     else:
         raise RuntimeError('Unknown dataset.')
 

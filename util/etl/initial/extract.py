@@ -19,10 +19,17 @@ from util.etl.initial.table.schools import TABLE_NAME_SCHOOLS, DTYPES_SCHOOLS, I
 from util.etl.initial.table.traffic import INCLUDED_COLUMNS_TRAFFIC, TABLE_NAME_TRAFFIC, DTYPES_TRAFFIC
 from util.etl.initial.table.weather import TABLE_NAME_WEATHER, DTYPES_WEATHER, INCLUDED_COLUMNS_WEATHER
 
-DTYPES_VIOLATION_CODE = {
+DTYPES_VIOLATION_COUNTIES = {
     'Violation County Code': 'str',
     'Violation County Name': 'str',
     'Violation County File Name Suffix': 'str'
+}
+
+DTYPES_VIOLATION_CODES = {
+    'Violation Code': 'int',
+    'Violation Description': 'str',
+    'Fine amount (Inner Manhattan)': 'int',
+    'Fine Amount': 'int'
 }
 
 DATA_METADATA = {
@@ -64,11 +71,11 @@ DATA_METADATA = {
     },
     'VIOLATION_COUNTY': {
         'filename': 'VIOLATION_COUNTY',
-        'dtypes': DTYPES_VIOLATION_CODE,
-        'columns': list(DTYPES_VIOLATION_CODE.keys()),
-        'default_column': list(DTYPES_VIOLATION_CODE.keys())[0],
-        'included_columns': list(DTYPES_VIOLATION_CODE.keys()),
-        'identifier_columns': [list(DTYPES_VIOLATION_CODE.keys())[0]],
+        'dtypes': DTYPES_VIOLATION_COUNTIES,
+        'columns': list(DTYPES_VIOLATION_COUNTIES.keys()),
+        'default_column': list(DTYPES_VIOLATION_COUNTIES.keys())[0],
+        'included_columns': list(DTYPES_VIOLATION_COUNTIES.keys()),
+        'identifier_columns': [list(DTYPES_VIOLATION_COUNTIES.keys())[0]],
         'date_column': None,
     },
     TABLE_NAME_REGISTERED_VEHICLES: {
@@ -106,6 +113,15 @@ DATA_METADATA = {
         'included_columns': INCLUDED_COLUMNS_TRAFFIC,
         'identifier_columns': ['Plaza ID', 'Date', 'Hour', 'Direction'],
         'date_column': None
+    },
+    'PARKING_VIOLATION_CODES': {
+        'filename': 'PARKING_VIOLATION_CODES',
+        'dtypes': DTYPES_VIOLATION_CODES,
+        'columns': list(DTYPES_VIOLATION_CODES.keys()),
+        'default_column': list(DTYPES_VIOLATION_CODES.keys())[0],
+        'included_columns': list(DTYPES_VIOLATION_CODES.keys()),
+        'identifier_columns': [list(DTYPES_VIOLATION_CODES.keys())[0]],
+        'date_column': None,
     }
 }
 

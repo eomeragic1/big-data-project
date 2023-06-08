@@ -25,6 +25,7 @@ LIST_TABLE_NAME = [
     'TRAFFIC',
     'REGISTERED_VEHICLES',
     'WEATHER',
+    'PARKING_VIOLATION_CODES',
 ]
 
 if __name__ == '__main__':
