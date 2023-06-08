@@ -32,12 +32,13 @@ if __name__ == '__main__':
                              buffer_memory=134217728,
                              value_serializer=lambda m: json.dumps(m).encode('ascii'),
                              partitioner=custom_partitioner)
-    files = os.listdir('./data/parquet/WEATHER.parquet')
+    files = os.listdir('../../../data/parquet/AUGMENTED_PARKING_VIOLATION_ISSUED.parquet')
     for file in files:
-        data = pd.read_parquet('./data/parquet/WEATHER.parquet' + '/' + file)
+        data = pd.read_parquet('../../../data/parquet/AUGMENTED_PARKING_VIOLATION_ISSUED.parquet' + '/' + file)
+        data = data.sample(frac=1)
         for idx, (i, datapoint) in enumerate(data.iterrows()):
             producer.send(
-                topic=f'topic-WEATHER2',
+                topic=f'topic-parking-violations-issued',
                 key=str(i).encode(),
                 value=datapoint.to_json()
             ).add_callback(on_send_success).add_errback(on_send_error)
