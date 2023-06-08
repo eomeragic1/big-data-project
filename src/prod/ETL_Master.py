@@ -98,4 +98,4 @@ if __name__ == '__main__':
                     data_path=config['environment'][environment_name]['data_output_dir'],
                     content_root_path='' if environment_name == 'hpc' else './')
         print('Press enter to close the cluster...')
-        input('Press enter to close the cluster...')
+        input('')

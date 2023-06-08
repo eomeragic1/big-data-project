@@ -11,9 +11,9 @@ def load(data: dd.DataFrame,
                     compression='gzip')
 
     # Store DataFrame in HDF5 format
-    # data.to_hdf(f'{data_path}/hdf5/{table_name}-*.hdf',
-    #             '/data',
-    #             mode='w',
-    #             complib='blosc',
-    #             complevel=9,
-    #             min_itemsize=75)
+    data.to_hdf(f'{data_path}/hdf5/{table_name}-*.hdf',
+                '/data',
+                mode='w',
+                complib='blosc',
+                complevel=9,
+                min_itemsize=75)

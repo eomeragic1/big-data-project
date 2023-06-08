@@ -6,9 +6,11 @@ import duckdb
 from box import Box
 from distributed import performance_report
 
+import util.etl.initial.load as load_initial
+import util.etl.initial.transform as transform_initial
+import util.etl.postprocessing.extract as extract_postprocessing
+import util.etl.postprocessing.transform as transform_postprocessing
 from util.custom.common import read_parquet_table
-from util.etl import initial as etl_initial
-from util.etl import postprocessing as etl_postprocessing
 
 LIST_FILE_MODE = [
     'parquet',
@@ -36,13 +38,13 @@ def etl_single_table_transformations(list_table_name: list,
 
             # Extract and transform custom
             input_data = input_data_path_augmentation if table_name != 'PARKING_VIOLATION_ISSUED' else input_data_path_original
-            transformed_data = etl_initial.transform.extract_transform(table_name=table_name,
-                                                                       data_path=input_data)
+            transformed_data = transform_initial.extract_transform(table_name=table_name,
+                                                                   data_path=input_data)
 
             # Load custom to HDF5 and Parquet
-            etl_initial.load.load(data=transformed_data,
-                                  table_name=table_name,
-                                  data_path=output_data_path)
+            load_initial.load(data=transformed_data,
+                              table_name=table_name,
+                              data_path=output_data_path)
 
             peak_memory_usage = round(tracemalloc.get_traced_memory()[1] / 1000000, 2)
             execution_time_in_s = round(time.time() - start_time, 2)
@@ -64,13 +66,13 @@ def etl_augmentation(list_table_name: list, data_path: str, content_root_path: s
         # joining_data = read_hdf5_table(table_name=table_name)
         joining_data = read_parquet_table(table_name=table_name, data_path=data_path + '/parquet',
                                           content_root_path=content_root_path)
-        data = etl_initial.transform.augment(data=data,
-                                             joining_data=joining_data,
-                                             joining_table_name=table_name)
+        data = transform_initial.augment(data=data,
+                                         joining_data=joining_data,
+                                         joining_table_name=table_name)
 
-    etl_initial.load.load(data=data,
-                          table_name='AUGMENTED_PARKING_VIOLATION_ISSUED',
-                          data_path='data')
+    load_initial.load(data=data,
+                      table_name='AUGMENTED_PARKING_VIOLATION_ISSUED',
+                      data_path='data')
 
     peak_memory_usage = round(tracemalloc.get_traced_memory()[1] / 1000000, 2)
     execution_time_in_s = round(time.time() - start_time, 2)
@@ -81,19 +83,20 @@ def etl_augmentation(list_table_name: list, data_path: str, content_root_path: s
 
 def etl_test_tools(list_table_name: list,
                    data_path: str,
-                   content_root_path: str,
-                   connection: duckdb.DuckDBPyConnection):
-    for table_name, file_mode, processing_mode in itertools.combinations(list_table_name,
-                                                                         LIST_FILE_MODE,
-                                                                         LIST_PROCESSING_MODE):
-        data = etl_postprocessing.extract.extract(table_name=table_name,
-                                                  file_mode=file_mode,
-                                                  processing_mode=processing_mode,
-                                                  data_path=f'{content_root_path}/{data_path}')
+                   connection: duckdb.DuckDBPyConnection,
+                   content_root_path: str = '.'):
+    for table_name, file_mode, processing_mode in itertools.product(list_table_name,
+                                                                    LIST_FILE_MODE,
+                                                                    LIST_PROCESSING_MODE):
+        data = extract_postprocessing.extract(table_name=table_name,
+                                              file_mode=file_mode,
+                                              processing_mode=processing_mode,
+                                              content_root_path=content_root_path,
+                                              data_path=data_path)
         if processing_mode == 'DuckDB':
             connection.register(table_name, data)
 
-        transformed_data = etl_postprocessing.transform.transform(data=data,
-                                                                  table_name=table_name,
-                                                                  connection=connection,
-                                                                  processing_mode=processing_mode)
+        transformed_data = transform_postprocessing.transform(data=data,
+                                                              table_name=table_name,
+                                                              connection=connection,
+                                                              processing_mode=processing_mode)
