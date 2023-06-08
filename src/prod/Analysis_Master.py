@@ -20,7 +20,7 @@ from util.analysis.analysis import generate_analysis_plots
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         prog='Data analysis master job',
-        description='This script generates analytics insights into the augmented data.')
+        description='This script generates postprocessing insights into the augmented data.')
 
     arg_env = parser.add_argument("-e",
                                   "--env",

@@ -1,18 +1,32 @@
 import dask_jobqueue
+import pandas as pd
 from box import Box
 from dask import dataframe as dd
 from dask.distributed import Client, LocalCluster
 
 
 def read_parquet_table(table_name: str,
-                       data_path: str = 'data/parquet',
-                       content_root_path: str = './'):
-    return dd.read_parquet(f'{content_root_path}{data_path}/{table_name}.parquet')
+                       data_path: str = 'data/augmentation/parquet',
+                       content_root_path: str = './',
+                       engine: str = 'dask'):
+    if engine == 'dask':
+        return dd.read_parquet(f'{content_root_path}{data_path}/{table_name}.parquet')
+    elif engine == 'pandas':
+        return pd.read_parquet(f'{content_root_path}{data_path}/{table_name}.parquet')
+    else:
+        raise RuntimeError('Unknown engine to read parquet table.')
+
 
 def read_hdf5_table(table_name: str,
                     data_path: str = 'data/hdf5',
-                    content_root_path: str = '.'):
-    return dd.read_hdf(f'{content_root_path}/{data_path}/{table_name}-*.hdf')
+                    content_root_path: str = '.',
+                    engine: str = 'dask'):
+    if engine == 'dask':
+        return dd.read_hdf(f'{content_root_path}/{data_path}/{table_name}-*.hdf')
+    elif engine == 'pandas':
+        return pd.read_hdf(f'{content_root_path}{data_path}/{table_name}-*.hdf')
+    else:
+        raise RuntimeError('Unknown engine to read HDF5 table.')
 
 
 def get_dask_cluster(config: Box,
