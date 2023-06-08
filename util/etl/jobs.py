@@ -3,6 +3,7 @@ import time
 import tracemalloc
 
 import duckdb
+import pandas as pd
 from box import Box
 from dask_sql import Context
 from distributed import performance_report
@@ -121,7 +122,13 @@ def etl_test_tools(list_table_name: list,
             'Row count ': transformed_data['row_count']
         })
         if file_mode == 'parquet' and processing_mode == 'Dask-Regular':
-            results['data_nullness'].append(transformed_data['nullness'])
-            results['data_row_count_by_date'].append(transformed_data['row_count_by_date'])
+            results['data_nullness'].extend([transformed_data['nullness']])
+            results['data_row_count_by_date'].extend([transformed_data['row_count_by_date']])
 
-    return results
+    data_nullness = pd.concat(results['data_nullness'], axis=0)
+    data_row_count_by_date = pd.concat(results['data_row_count_by_date'], axis=0)
+    data_metadata = pd.DataFrame(results['data_metadata'])
+
+    load_initial.load(data=data_nullness, table_name='PROCESSED_COLUMN_NULLNESS', data_path=data_path)
+    load_initial.load(data=data_row_count_by_date, table_name='PROCESSED_COUNT_BY_DATE', data_path=data_path)
+    load_initial.load(data=data_metadata, table_name='PROCESSED_TABLE_METADATA', data_path=data_path)

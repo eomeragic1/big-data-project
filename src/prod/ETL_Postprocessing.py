@@ -2,7 +2,6 @@ import argparse
 
 import duckdb
 from box import Box
-from dask import dataframe as dd
 from dask.distributed import Client
 from dask_sql import Context
 
@@ -19,12 +18,6 @@ LIST_TABLE_NAME = [
     'REGISTERED_VEHICLES',
     'PERMITTED_EVENTS',
 ]
-
-
-def memory_usage(data: dd.DataFrame,
-                 column_name: str):
-    return data[column_name].memory_usage(deep=True).compute() / 1000000
-
 
 if __name__ == '__main__':
     # Read configuration file
