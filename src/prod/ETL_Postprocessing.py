@@ -1,9 +1,18 @@
 import argparse
+import inspect
+import os
+import sys
 
 import duckdb
 from box import Box
 from dask.distributed import Client
 from dask_sql import Context
+
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(current_dir)
+parent_parent_dir = os.path.dirname(parent_dir)
+sys.path.insert(0, parent_dir)
+sys.path.insert(0, parent_parent_dir)
 
 from util.custom.common import get_dask_cluster
 from util.etl.jobs import etl_test_tools
