@@ -25,7 +25,7 @@ def transform_dask_sql(data: dd.DataFrame,
     data_row_count = context.sql(f'''
                         SELECT COUNT(1) AS ROW_COUNT
                         FROM {table_name} 
-                        ''').compute()
+                        ''').compute().iloc[0]['row_count']
 
     data_row_count_by_date = None
     # Calculating ROW COUNT BY DATE
@@ -85,7 +85,7 @@ def transform_dask_regular(data: dd.DataFrame,
         [{col: 100 * (data[col].isnull().sum().compute()) / data.shape[0].compute() for col in data.columns}]
     ).T.reset_index()
     data_nullness.columns = ['Column Name', 'Nullness']
-    data_nullness['Table Name'] = len(data_nullness) * ['WEATHER']
+    data_nullness['Table Name'] = len(data_nullness) * [table_name]
 
     data_row_count = data.shape[0].compute()
 
