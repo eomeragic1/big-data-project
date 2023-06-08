@@ -48,266 +48,38 @@ def generate_analysis_plots(analysis_dir: str, data_path: str, content_root_path
     ax[1].grid(0.6)
     ax[1].set_title('Average traffic count \n on New York City bridges and tunnels')
 
-    plt.savefig(analysis_dir + '/plot_1.png', facecolor='white', bbox_inches='tight')
-    print('Finished generating first plot')
-    ## Second plot - Timeline chart, amount of tickets per day for each borough
+    ## Scatter plot for events count
 
-    violations_per_day = augmented_data[['Issue Date', 'Violation County Name']]
-    violations_per_day = violations_per_day.groupby([violations_per_day['Issue Date'].dt.year.rename('Year'),
-                                                     violations_per_day['Issue Date'].dt.month.rename('Month'),
-                                                     'Violation County Name']).size().reset_index().compute()
-    violations_per_day.columns = ['Year', 'Month', 'Violation County', 'Counts']
-    violations_per_day['Issue Date'] = pd.to_datetime(
-        violations_per_day['Year'].astype(str) + '-' + violations_per_day['Month'].astype(str) + '-1')
-    violations_per_day_pivot = violations_per_day[['Issue Date', 'Violation County', 'Counts']].pivot(
-        index='Issue Date', columns='Violation County', values='Counts')
-
-    population_density = {'Manhattan': 28872,
-                          'Brooklyn': 15227,
-                          'Bronx': 13482,
-                          'Queens': 8542,
-                          'Staten Island': 3327}
-    for column in violations_per_day_pivot.columns:
-        violations_per_day_pivot[column] = violations_per_day_pivot[column] / population_density[column]
-
+    events_data = augmented_data.groupby(['Issue Date', 'Violation County Name']).agg(
+        {'PE - Events Count': 'mean', 'PE - Event Borough': 'count'}).reset_index().compute()
+    events_data.columns = ['Date', 'Borough', 'Events Count', 'Violations Count']
     fig, ax = plt.subplots()
-    ax.plot(violations_per_day_pivot)
-    ax.set_xlabel('Hour')
-    ax.set_ylabel('Number of tickets / (people / sq. km)')
-    ax.legend(violations_per_day_pivot.columns)
-    ax.grid(0.6)
-    ax.set_title(
-        'Daily county of tickets for each borough through time \n normalized by population density (people/sq. km)')
-    plt.savefig(analysis_dir + '/plot_2.png', facecolor='white', bbox_inches='tight')
-    print('Finished generating second plot')
-
-    ## Third plot - Average amount of tickets during each day of the week for each borough
-
-    augmented_data['Weekday'] = augmented_data['Issue Date'].apply(lambda x: pd.to_datetime(x, unit='s').dayofweek,
-                                                                   meta=('Issue Weekday', int))
-    violations_per_weekday = augmented_data[['Weekday', 'Violation County Name']].groupby(
-        ['Weekday', 'Violation County Name']).size().reset_index().compute()
-    violations_per_weekday.columns = ['Weekday', 'Violation County', 'Counts']
-    violations_per_weekday['Counts'] = violations_per_weekday['Counts'] / no_days
-    violations_per_weekday_pivot = violations_per_weekday.pivot(index='Weekday', columns='Violation County',
-                                                                values='Counts').sort_index()
-    violations_per_weekday_pivot.index = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-
-    violations_per_weekday_pivot.plot(kind='bar', figsize=(10, 6))
-    plt.xlabel('Weekday')
-    plt.ylabel('Average no. Parking Violations')
-    plt.title('Average no. Parking Violations by County and Weekday')
-    plt.grid(0.2)
-    plt.legend(loc='upper right')
-    plt.savefig(analysis_dir + '/plot_3.png', facecolor='white', bbox_inches='tight')
-    print('Finished generating third plot')
-
-    ## Fourth and fifth plot - Car manufacturers
-    vehicle_mappings = {'HONDA': 'Honda', 'TOYOT': 'Toyota', 'FORD': 'Ford', 'NISSA': 'Nissan', 'CHEVR': 'Chevrolet',
-                        'ME/BE': 'Mercedes-Benz', 'BMW': 'BMW',
-                        'JEEP': 'Jeep', 'HYUND': 'Hyundai', 'LEXUS': 'Lexus', 'ACURA': 'Acura', 'FRUEH': 'Freuheur',
-                        'DODGE': 'Dodge', 'SUBAR': 'Subaru',
-                        'KIA': 'Kia', 'VOLKS': 'Volkswagen', 'AUDI': 'Audi', 'MAZDA': 'Mazda', 'INFIN': 'Infiniti',
-                        'RAM': 'RAM', 'GMC': 'GMC', 'ROVER': 'Rover',
-                        'CHRYS': 'Chrysler', 'HIN': 'Hino', 'CADIL': 'Cadillac', 'VOLVO': 'Volvo',
-                        'INTER': 'International Harvester', 'TESLA': 'Tesla', 'ISUZU': 'Isuzu', 'MITSU': 'Mitsubishi'}
-
-    def apply_filter_vehicle_makers(x):
-        if x not in vehicle_mappings.keys():
-            return ''
-        return x
-
-    augmented_data['Vehicle Make'] = augmented_data['Vehicle Make'].apply(apply_filter_vehicle_makers,
-                                                                          meta=('Vehicle Make', str)).replace(
-        '', np.nan)
-    vehicle_makers = augmented_data.dropna(subset='Vehicle Make').groupby(['Vehicle Make']).size().reset_index()
-    vehicle_makers.columns = ['Vehicle Make', 'Counts']
-
-    registered_vehicles = read_parquet_table(table_name='REGISTERED_VEHICLES',
-                                             data_path=data_path + '/parquet',
-                                             content_root_path=content_root_path).add_prefix('RV - ')
-    vehicle_stats = dd.merge(
-        left=vehicle_makers,
-        right=registered_vehicles,
-        left_on='Vehicle Make',
-        right_on='RV - Vehicle Make',
-        how='inner'
-    )
-    vehicle_stats['Ratio'] = vehicle_stats['Counts'] / vehicle_stats['RV - Count']
-    vehicle_stats = vehicle_stats.nlargest(n=20, columns=['Ratio'])
-    vehicle_stats['Vehicle Make'] = vehicle_stats['Vehicle Make'].apply(lambda x: vehicle_mappings[x],
-                                                                        meta=('Vehicle Make', str))
-    vehicle_stats = vehicle_stats.compute()
-
-    fig, ax = plt.subplots()
-    ax.barh(vehicle_stats.head(10)['Vehicle Make'], vehicle_stats.head(10)['Ratio'], color='orange')
-    for i, count in enumerate(vehicle_stats.head(10)['Ratio']):
-        ax.text(count, i, "{0:.2f}".format(count), ha='left', va='center')
-
-    ax.set_title('Vehicle makes with the highest ratio of \n parking violations over the number of registered vehicles')
-    ax.set_xlabel('Ratio')
-    ax.set_ylabel('Vehicle Make')
-    ax.grid(0.6)
-    ax.invert_yaxis()
-    plt.savefig(analysis_dir + '/plot_4.png', facecolor='white', bbox_inches='tight')
-    print('Finished generating fourth plot')
-
-    fig, ax = plt.subplots()
-    ax.barh(vehicle_stats.iloc[3:13]['Vehicle Make'], vehicle_stats.iloc[3:13]['Ratio'], color='orange')
-    for i, count in enumerate(vehicle_stats.iloc[3:13]['Ratio']):
-        ax.text(count, i, "{0:.2f}".format(count), ha='left', va='center')
-
-    ax.set_title('Vehicle makes with the highest ratio of \n parking violations over the number of registered vehicles')
-    ax.set_xlabel('Ratio')
-    ax.set_ylabel('Vehicle Make')
-    ax.grid(0.6)
-    ax.invert_yaxis()
-    plt.savefig(analysis_dir + '/plot_5.png', facecolor='white', bbox_inches='tight')
-    print('Finished generating fifth plot')
-
-    ## Sixth plot - manufacturers and $$$
-
-    fine_codes = read_parquet_table('PARKING_VIOLATION_CODES', data_path=data_path + '/parquet',
-                                    content_root_path=content_root_path)
-    augmented_data['Violation Code'] = augmented_data['Violation Code'].astype('int64')
-    vehicles_makers_fines = \
-        augmented_data.dropna(subset='Vehicle Make').merge(fine_codes, how="inner", on=["Violation Code"]).groupby(
-            ['Vehicle Make'])['Fine Amount'].sum().reset_index().sort_values(['Fine Amount'], ascending=False)
-
-    vehicles_makers_fines.columns = ['Vehicle Make', 'Fine Amount']
-    vehicles_makers_fines['Vehicle Make'] = vehicles_makers_fines['Vehicle Make'].apply(lambda x: vehicle_mappings[x],
-                                                                                        meta=('Vehicle Make', str))
-    vehicles_makers_fines = vehicles_makers_fines.compute()
-    fig, ax = plt.subplots()
-    ax.barh(vehicles_makers_fines.head(10)['Vehicle Make'], vehicles_makers_fines.head(10)['Fine Amount'],
-            color='orange')
-    for i, count in enumerate(vehicles_makers_fines.head(10)['Fine Amount']):
-        ax.text(count, i, "${0:.1f}M".format(count / 1000000.), ha='left', va='center')
-
-    ax.set_title('Vehicle makes with the highest amount \n of fines paid')
-    ax.set_xlabel('Fine Amount')
-    ax.set_ylabel('Vehicle Make')
-    ax.grid(0.6)
-    ax.invert_yaxis()
-    plt.savefig(analysis_dir + '/plot_6.png', facecolor='white', bbox_inches='tight')
-    print('Finished generating sixth plot')
-
-    ## Seventh plot - States that people come from
-
-    grouped_df = augmented_data.dropna(subset=['Registration State']).groupby(
-        ['Registration State']).size().reset_index().rename(columns={0: 'Count'}).sort_values(by=['Count']).compute()
-    grouped_df['Count'] = np.log10(grouped_df['Count'])
-    fig = px.choropleth(grouped_df,
-                        locations='Registration State',
-                        locationmode='USA-states',
-                        scope="usa",
-                        color=grouped_df['Count'],
-                        color_continuous_scale="armyrose",
-                        title='Number of Parking Violations per US State (Logarithmic Colorbar)',
-                        labels={'Count': 'Number of Parking Violations'})
-    colorbar_tickvals = [0, 1, 2, 3, 4, 5, 6, 7, 8]  # Example values, adjust as needed
-    colorbar_ticktext = ['1', '10', '100', '1000', '10000', '100000', '1000000',
-                         '10000000', '100000000']  # Example labels, adjust as needed
-    fig.update_layout(coloraxis_colorbar=dict(
-        tickmode='array',
-        tickvals=colorbar_tickvals,
-        ticktext=colorbar_ticktext,
-    ))
-    fig.write_image("assets/plot_7.png")
-    print('Finished generating seventh plot')
-
-    ## Ratio for weather
-
-    temperature_data = augmented_data[['W - Temperature', 'Violation County Name']].dropna(subset=['W - Temperature'])
-    temperature_data['W - Temperature'] = temperature_data['W - Temperature'].astype(float).apply(lambda x: round(x),
-                                                                                                  meta=(
-                                                                                                      'W - Temperature',
-                                                                                                      int))
-    temperature_data = temperature_data.groupby(
-        ['W - Temperature', 'Violation County Name']).size().reset_index().rename(
-        columns={0: 'Violations Temperature Count'})
-
-    weather_data = read_parquet_table('WEATHER', data_path=data_path + '/parquet',
-                                      content_root_path=content_root_path)
-    weather_temperature_data = weather_data.dropna(subset=['Temperature'])
-    weather_temperature_data['Temperature'] = weather_temperature_data['Temperature'].astype(float).apply(lambda x: round(x),
-                                                                                  meta=('Temperature', int))
-    weather_temperature_data = weather_temperature_data.groupby(['Temperature', 'Borough']).size().reset_index().rename(
-        columns={0: 'Total Temperature Count'})
-
-    merged_df = temperature_data.merge(weather_temperature_data, left_on=['W - Temperature', 'Violation County Name'],
-                                       right_on=['Temperature', 'Borough'], how='inner')
-    merged_df['Ratio'] = merged_df['Violations Temperature Count'] / merged_df['Total Temperature Count']
-
-    merged_df = merged_df.sort_values(by=['Temperature', 'Borough']).compute()
-    fig, ax = plt.subplots()
-    for label, group in merged_df.groupby(['Borough']):
-        group.plot(x='Temperature', y='Ratio', label=label, ax=ax)
-    plt.xlabel('Temperature (°C)')
-    plt.ylabel('Ratio')
-    plt.title(
-        'Ratio of the amount of parking violations issued \n during each temperature range over \n the total amount of times that temperature range\n was present')
+    colors = ['blue', 'green', 'orange', 'red', 'black']
+    for i, (label, group) in enumerate(events_data.groupby(['Borough'])):
+        group.plot.scatter(x='Events Count', y='Violations Count', label=label, ax=ax, c=colors[i])
+    plt.xlabel('Number of active events')
+    plt.ylabel('Number of violations')
+    plt.title('Comparison of the number of active permitted events in each borough\n to the number of violations that happened that day')
     plt.legend()
     plt.grid(0.6)
-    plt.savefig(analysis_dir + '/plot_8.png', facecolor='white', bbox_inches='tight')
-    print('Finished generating eight plot')
+    plt.savefig(analysis_dir + '/plot_11.png', facecolor='white', bbox_inches='tight')
+    print('Finished generating eleventh plot')
 
-    ## One more for rain
-
-    rain_data = augmented_data[['W - Rain', 'Violation County Name']].dropna(subset=['W - Rain'])
-    rain_data['W - Rain'] = rain_data['W - Rain'].astype(float)
-    rain_data = rain_data.groupby(
-        ['W - Rain', 'Violation County Name']).size().reset_index().rename(
-        columns={0: 'Violations Rain Count'})
-
-    weather_rain_data = weather_data.dropna(subset=['Rain'])
-    weather_rain_data['Rain'] = weather_rain_data['Rain'].astype(float)
-    weather_rain_data = weather_rain_data.groupby(['Rain', 'Borough']).size().reset_index().rename(
-        columns={0: 'Total Rain Count'})
-
-    merged_df = rain_data.merge(weather_rain_data, left_on=['W - Rain', 'Violation County Name'],
-                                       right_on=['Rain', 'Borough'], how='inner')
-    merged_df['Ratio'] = merged_df['Violations Rain Count'] / merged_df['Total Rain Count']
-
-    merged_df = merged_df.sort_values(by=['Rain', 'Borough']).compute()
+    ## Scatter plot for schools count
+    school_data = augmented_data.dropna(subset=['S - Police Precinct']).groupby(['S - Police Precinct']).agg(
+        {'S - Number of Schools': 'mean', 'Violation Precinct': 'count'}).reset_index().compute()
+    school_data.columns = ['Precinct', 'Number of Schools', 'Number of violations']
     fig, ax = plt.subplots()
-    for label, group in merged_df.groupby(['Borough']):
-        group.plot(x='Rain', y='Ratio', label=label, ax=ax)
-    plt.xlabel('Rain (mm)')
-    plt.ylabel('Ratio')
+    z = np.polyfit(x=school_data['Number of Schools'], y=school_data['Number of violations'], deg=1)
+    # Create sequence of 100 numbers from 0 to 100
+    xseq = np.linspace(0, 80, num=10)
+    ax.plot(xseq, z[1] + z[0] * xseq, color="k", lw=2.5)
+    ax.scatter(school_data['Number of Schools'], school_data['Number of violations'], c='orange')
+    plt.xlabel('Number of schools in the precinct')
+    plt.ylabel('Number of violations')
     plt.title(
-        'Ratio of the amount of parking violations issued \n during each rain precipitation range over \n the total amount of times that rain precipitation range\n was present')
+        'Comparison of the number of schools in each police precinct\n to the number of violations that happened in that police precinct')
     plt.legend()
     plt.grid(0.6)
-    plt.savefig(analysis_dir + '/plot_9.png', facecolor='white', bbox_inches='tight')
-    print('Finished generating ninth plot')
-
-    ## One more for snowfall
-
-    snowfall_data = augmented_data[['W - Snowfall', 'Violation County Name']].dropna(subset=['W - Snowfall'])
-    snowfall_data['W - Snowfall'] = snowfall_data['W - Snowfall'].astype(float)
-    snowfall_data = snowfall_data.groupby(
-        ['W - Snowfall', 'Violation County Name']).size().reset_index().rename(
-        columns={0: 'Violations Snowfall Count'})
-
-    weather_snowfall_data = weather_data.dropna(subset=['Snowfall'])
-    weather_snowfall_data['Rain'] = weather_snowfall_data['Snowfall'].astype(float)
-    weather_snowfall_data = weather_snowfall_data.groupby(['Snowfall', 'Borough']).size().reset_index().rename(
-        columns={0: 'Total Snowfall Count'})
-
-    merged_df = snowfall_data.merge(weather_snowfall_data, left_on=['W - Snowfall', 'Violation County Name'],
-                                right_on=['Snowfall', 'Borough'], how='inner')
-    merged_df['Ratio'] = merged_df['Violations Snowfall Count'] / merged_df['Total Snowfall Count']
-
-    merged_df = merged_df.sort_values(by=['Snowfall', 'Borough']).compute()
-    fig, ax = plt.subplots()
-    for label, group in merged_df.groupby(['Borough']):
-        group.plot(x='Snowfall', y='Ratio', label=label, ax=ax)
-    plt.xlabel('Snowfall (cm)')
-    plt.ylabel('Ratio')
-    plt.title(
-        'Ratio of the amount of parking violations issued \n during each snow precipitation range over \n the total amount of times that snow precipitation range\n was present')
-    plt.legend()
-    plt.grid(0.6)
-    plt.savefig(analysis_dir + '/plot_10.png', facecolor='white', bbox_inches='tight')
-    print('Finished generating tenth plot')
+    plt.savefig(analysis_dir + '/plot_12.png', facecolor='white', bbox_inches='tight')
+    print('Finished generating 12th plot')
