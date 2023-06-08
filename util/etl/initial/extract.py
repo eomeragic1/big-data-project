@@ -58,7 +58,7 @@ DATA_METADATA = {
         'default_column': list(DTYPES_WEATHER.keys())[0],
         'included_columns': INCLUDED_COLUMNS_WEATHER,
         'identifier_columns': ['Time', 'Borough'],
-        'date_column': None
+        'date_column': 'Date'
     },
     TABLE_NAME_EVENT: {
         'filename': f'{TABLE_NAME_EVENT}',

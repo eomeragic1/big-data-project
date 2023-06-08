@@ -4,6 +4,7 @@ import tracemalloc
 
 import duckdb
 from box import Box
+from dask_sql import Context
 from distributed import performance_report
 
 import util.etl.initial.load as load_initial
@@ -84,7 +85,14 @@ def etl_augmentation(list_table_name: list, data_path: str, content_root_path: s
 def etl_test_tools(list_table_name: list,
                    data_path: str,
                    connection: duckdb.DuckDBPyConnection,
+                   context: Context,
                    content_root_path: str = '.'):
+    results = dict(
+        data_nullness=list(),
+        data_row_count_by_date=list(),
+        data_metadata=list()
+
+    )
     for table_name, file_mode, processing_mode in itertools.product(list_table_name,
                                                                     LIST_FILE_MODE,
                                                                     LIST_PROCESSING_MODE):
@@ -96,7 +104,23 @@ def etl_test_tools(list_table_name: list,
         if processing_mode == 'DuckDB':
             connection.register(table_name, data)
 
+        if processing_mode == 'Dask-SQL':
+            context.create_table(table_name, data)
+
         transformed_data = transform_postprocessing.transform(data=data,
                                                               table_name=table_name,
                                                               connection=connection,
+                                                              context=context,
                                                               processing_mode=processing_mode)
+        results['data_metadata'].append({
+            'Table': table_name,
+            'File mode': file_mode,
+            'Processing mode': processing_mode,
+            'Execution time': transformed_data['Execution time'],
+            'Peak memory usage': transformed_data['Peak memory usage'],
+            'Row count ': transformed_data['row_count']
+        })
+        if file_mode == 'parquet' and processing_mode == 'Dask-Regular':
+            results['data_nullness'].append(transformed_data['nullness'])
+            results['data_row_count_by_date'].append(transformed_data['row_count_by_date'])
+    return results
