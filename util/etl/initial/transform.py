@@ -26,7 +26,7 @@ def transform_PVI(data_PVI: dd.DataFrame) -> dd.DataFrame:
                                                         format='%m/%d/%Y', errors='coerce')
     transformed_data_PVI = transformed_data_PVI.loc[
                            (transformed_data_PVI['Issue Date'] >= datetime.datetime(2013, 6, 1)) & (
-                                       transformed_data_PVI['Date'] <= datetime.datetime.today()), :]
+                                       transformed_data_PVI['Issue Date'] <= datetime.datetime.today()), :]
 
     def transform_violation_time_instance(x: str):
         if not x or len(x) != 5 or ' ' in x:
@@ -106,7 +106,7 @@ def transform_PE(data_PE: dd.DataFrame) -> dd.DataFrame:
     transformed_data_PE['End Date/Time'] = dd.to_datetime(transformed_data_PE['End Date/Time'],
                                                           format='%m/%d/%Y %I:%M:%S %p')
     filtered_data = transformed_data_PE.loc[
-                    (transformed_data_PE['End Date/Time'] >= datetime.datetime(2022, 6, 1)) & (
+                    (transformed_data_PE['End Date/Time'] >= datetime.datetime(2013, 6, 1)) & (
                             transformed_data_PE['Start Date/Time'] <= datetime.datetime.now()),
                     :].reset_index(drop=True)
     filtered_data['Date'] = filtered_data.apply(
