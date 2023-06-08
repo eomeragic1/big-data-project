@@ -68,4 +68,5 @@ if __name__ == '__main__':
         etl_test_tools(list_table_name=LIST_TABLE_NAME,
                        data_path=config['environment'][environment_name]["data_output_dir"],
                        connection=connection,
-                       context=context)
+                       context=context,
+                       content_root_path='' if environment_name == 'hpc' else './')

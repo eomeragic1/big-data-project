@@ -10,9 +10,9 @@ def read_parquet_table(table_name: str,
                        content_root_path: str = '.',
                        engine: str = 'dask'):
     if engine == 'dask':
-        return dd.read_parquet(f'{content_root_path}/{data_path}/{table_name}.parquet')
+        return dd.read_parquet(f'{content_root_path}{data_path}/{table_name}.parquet')
     elif engine == 'pandas':
-        return pd.read_parquet(f'{content_root_path}/{data_path}/{table_name}.parquet')
+        return pd.read_parquet(f'{content_root_path}{data_path}/{table_name}.parquet')
     else:
         raise RuntimeError('Unknown engine to read parquet table.')
 
@@ -21,7 +21,7 @@ def read_hdf5_table(table_name: str,
                     data_path: str = 'data/hdf5',
                     content_root_path: str = '.',
                     engine: str = 'dask'):
-    data = dd.read_hdf(pattern=f'{content_root_path}/{data_path}/{table_name}-*.hdf', key='/data')
+    data = dd.read_hdf(pattern=f'{content_root_path}{data_path}/{table_name}-*.hdf', key='/data')
     if engine == 'pandas':
         data = data.compute()
     elif engine != 'dask':
