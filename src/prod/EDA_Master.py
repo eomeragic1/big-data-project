@@ -5,6 +5,7 @@ import sys
 
 from box import Box
 from dask.distributed import Client
+from distributed import performance_report
 
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
@@ -48,6 +49,7 @@ if __name__ == '__main__':
     with Client(cluster, timeout='120s') as client:
         print('Dask client successfully initialized')
 
-        generate_analysis_plots(analysis_dir='./assets',
-                                data_path=config['environment'][environment_name]['data_output_dir'],
-                                content_root_path='' if environment_name == 'hpc' else './')
+        with performance_report(filename=f"assets/Performance Reports/EDA-Performance-Report.html"):
+            generate_analysis_plots(analysis_dir='./assets',
+                                    data_path=config['environment'][environment_name]['data_output_dir'],
+                                    content_root_path='' if environment_name == 'hpc' else './')
