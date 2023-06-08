@@ -13,7 +13,7 @@ from util.etl.initial.extract import DATA_METADATA
 def transform_dask_sql(data: dd.DataFrame,
                        table_name: str,
                        context: Context):
-    nullness_columns = ','.join([f'100 * (COUNT(1) - COUNT("{col}")) / COUNT(1) AS {col}' for col in data.columns])
+    nullness_columns = ','.join([f'100 * (COUNT(1) - COUNT("{col}")) / COUNT(1) AS "{col}"' for col in data.columns])
     data_nullness = context.sql(f'''
                         SELECT {nullness_columns}
                         FROM {table_name} 
@@ -48,7 +48,7 @@ def transform_duckdb(data: pd.DataFrame,
                      table_name: str,
                      connection: duckdb.DuckDBPyConnection):
     # Calculating NULNESS
-    nullness_columns = ','.join([f'100 * (COUNT(1) - COUNT({col})) / COUNT(1) AS {col}' for col in data.columns])
+    nullness_columns = ','.join([f'100 * (COUNT(1) - COUNT("{col}")) / COUNT(1) AS "{col}"' for col in data.columns])
     data_nullness = connection.execute(f'''
                     SELECT {nullness_columns}
                     FROM {table_name} 
@@ -66,10 +66,10 @@ def transform_duckdb(data: pd.DataFrame,
     # Calculating ROW COUNT BY DATE
     if DATA_METADATA[table_name]['date_column'] is not None:
         data_row_count_by_date = connection.execute(f'''
-                        SELECT {DATA_METADATA[table_name]['date_column']} AS DATE,
+                        SELECT "{DATA_METADATA[table_name]['date_column']}" AS DATE,
                             COUNT(1) AS ROW_COUNT
                         FROM {table_name} 
-                        GROUP BY {DATA_METADATA[table_name]['date_column']}
+                        GROUP BY "{DATA_METADATA[table_name]['date_column']}"
                         ''').fetchall()
 
     return {

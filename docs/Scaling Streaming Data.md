@@ -1,4 +1,5 @@
-# Scaling Streaming of Data with Kafka and Faust
+# Scaling Streaming 
+That is it! Now the Kafka Data with Kafka and Faust
 
 In this document, we explain how to scale the ingestion and processing of data streams with libraries that support distributed computing. 
 
@@ -37,8 +38,7 @@ and
 ```
 
 Note: different commands are used to start Zookeeper and Kafka in Linux (e.g. on a cluster). Just omit the \windows\ folder in the commands to start them in Linux.
-
-That is it! Now the Kafka broker is running by default on port 9092 and we can start creating topics and submitting the data to the broker.
+broker is running by default on port 9092 and we can start creating topics and submitting the data to the broker.
 
 ### Simulating Kafka producers with Pandas DataFrames
 

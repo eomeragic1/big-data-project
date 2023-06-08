@@ -15,7 +15,7 @@ from util.custom.common import read_parquet_table
 
 LIST_FILE_MODE = [
     'parquet',
-    'hdf5'
+    # 'hdf5'
 ]
 
 LIST_PROCESSING_MODE = [
@@ -123,4 +123,5 @@ def etl_test_tools(list_table_name: list,
         if file_mode == 'parquet' and processing_mode == 'Dask-Regular':
             results['data_nullness'].append(transformed_data['nullness'])
             results['data_row_count_by_date'].append(transformed_data['row_count_by_date'])
+
     return results
