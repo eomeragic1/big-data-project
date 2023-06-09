@@ -17,15 +17,15 @@ from util.custom.common import get_dask_cluster
 from util.etl.jobs import etl_single_table_transformations, etl_augmentation
 
 LIST_TABLE_NAME = [
-    'LEGALLY_OPERATING_BUSINESS',
+    # 'LEGALLY_OPERATING_BUSINESS',
     'PARKING_VIOLATION_ISSUED',
-    'VIOLATION_COUNTY',
-    'PERMITTED_EVENTS',
-    'SCHOOLS',
-    'TRAFFIC',
-    'REGISTERED_VEHICLES',
-    'WEATHER',
-    'PARKING_VIOLATION_CODES',
+    # 'VIOLATION_COUNTY',
+    # 'PERMITTED_EVENTS',
+    # 'SCHOOLS',
+    # 'TRAFFIC',
+    # 'REGISTERED_VEHICLES',
+    # 'WEATHER',
+    # 'PARKING_VIOLATION_CODES',
 ]
 
 if __name__ == '__main__':

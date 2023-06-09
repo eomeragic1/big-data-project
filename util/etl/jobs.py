@@ -34,7 +34,8 @@ def etl_single_table_transformations(list_table_name: list,
             # Load custom to HDF5 and Parquet
             load_initial.load(data=transformed_data,
                               table_name=table_name,
-                              data_path=output_data_path)
+                              data_path=output_data_path,
+                              load_to_hdf5=environment_name == 'local')
 
             peak_memory_usage = round(tracemalloc.get_traced_memory()[1] / 1000000, 2)
             execution_time_in_s = round(time.time() - start_time, 2)
@@ -72,6 +73,8 @@ def etl_augmentation(list_table_name: list, data_path: str, content_root_path: s
 
 
 def etl_test_tools(list_table_name: list,
+                   list_file_mode,
+                   list_processing_mode,
                    data_path: str,
                    connection: duckdb.DuckDBPyConnection,
                    context: Context,
@@ -83,8 +86,8 @@ def etl_test_tools(list_table_name: list,
 
     )
     for table_name, file_mode, processing_mode in itertools.product(list_table_name,
-                                                                    LIST_FILE_MODE,
-                                                                    LIST_PROCESSING_MODE):
+                                                                    list_file_mode,
+                                                                    list_processing_mode):
         data = extract_postprocessing.extract(table_name=table_name,
                                               file_mode=file_mode,
                                               processing_mode=processing_mode,
