@@ -59,7 +59,8 @@ def etl_augmentation(list_table_name: list, data_path: str, content_root_path: s
                                           content_root_path=content_root_path)
         data = transform_initial.augment(data=data,
                                          joining_data=joining_data,
-                                         joining_table_name=table_name)
+                                         joining_table_name=table_name
+                                         )
 
     load_initial.load(data=data,
                       table_name='AUGMENTED_PARKING_VIOLATION_ISSUED',

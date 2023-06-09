@@ -29,7 +29,7 @@ output_topic = app.topic('output-topic-parking-violations-issued')
 
 
 @app.agent(input_topic)
-async def consume_weather(stream):
+async def consume_parking_violation_tickets(stream):
     async for message in stream:
         message = json.loads(message)
         new_msg = {'Issue Date': message['Issue Date'], 'Temperature': message['W - Temperature'], 'Violation County': message['Violation County Name']}

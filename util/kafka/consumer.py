@@ -7,7 +7,7 @@ from collections import deque
 from time import sleep
 
 
-class MyKafkaConnect:
+class KafkaConnect:
     def __init__(self, topic, group, que_len=1000):
         self.topic = topic
 
@@ -94,7 +94,7 @@ class MyKafkaConnect:
 
 # for test
 if __name__ == '__main__':
-    connect = MyKafkaConnect(topic='output-topic-parking-violations-issued', group='test_group')
+    connect = KafkaConnect(topic='output-topic-parking-violations-issued', group='test_group')
 
     while True:
         test = connect.get_graph_data()

@@ -8,10 +8,10 @@ import plotly
 from dash.dependencies import Input, Output
 from plotly.subplots import make_subplots
 
-from util.kafka.consumer import MyKafkaConnect
+from util.kafka.consumer import KafkaConnect
 
 
-connect = MyKafkaConnect(topic='output-topic-parking-violations-issued', group='test_group')
+connect = KafkaConnect(topic='output-topic-parking-violations-issued', group='test_group')
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 

@@ -18,7 +18,7 @@ from util.custom.common import get_dask_cluster
 from util.etl.jobs import etl_test_tools
 
 LIST_TABLE_NAME = [
-    # 'LEGALLY_OPERATING_BUSINESS',
+    'LEGALLY_OPERATING_BUSINESS',
     # 'PARKING_VIOLATION_ISSUED',
     'WEATHER',
     # 'TRAFFIC',
