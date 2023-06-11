@@ -19,23 +19,23 @@ from util.etl.jobs import etl_test_tools
 
 LIST_TABLE_NAME = [
     'LEGALLY_OPERATING_BUSINESS',
-    # 'PARKING_VIOLATION_ISSUED',
+    'PARKING_VIOLATION_ISSUED',
     'WEATHER',
     'TRAFFIC',
     'SCHOOLS',
-    # 'VIOLATION_COUNTY',
+    'VIOLATION_COUNTY',
     'REGISTERED_VEHICLES',
-    # 'PERMITTED_EVENTS'
+    'PERMITTED_EVENTS'
 ]
 
 LIST_FILE_MODE = [
     'parquet',
-    'hdf5'
+    #'hdf5'
 ]
 
 LIST_PROCESSING_MODE = [
-    'DuckDB',
-    'Dask-SQL',
+    #'DuckDB',
+    #'Dask-SQL',
     'Dask-Regular'
 ]
 

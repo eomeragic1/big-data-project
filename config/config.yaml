@@ -3,8 +3,8 @@ cluster:
     n_workers: 2
     threads_per_worker: 4
   hpc:
-    memory: 16GB
-    cores: 16
+    memory: 128GB
+    cores: 12
     processes: 4
     jobs: 4
 
@@ -16,4 +16,4 @@ environment:
   hpc:
     data_augmentation_dir: /d/hpc/projects/FRI/bigdata/students/data_ermin_and_luka/augmentation
     data_original_dir: /d/hpc/projects/FRI/bigdata/data/NYTickets
-    data_output_dir: /d/hpc/projects/FRI/bigdata/students/data_ermin_and_luka/processed
+    data_output_dir: /d/hpc/home/lz3057/data/processed

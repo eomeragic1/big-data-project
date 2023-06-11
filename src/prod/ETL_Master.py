@@ -24,8 +24,7 @@ LIST_TABLE_NAME = [
     'SCHOOLS',
     'TRAFFIC',
     'REGISTERED_VEHICLES',
-    'WEATHER',
-    'PARKING_VIOLATION_CODES',
+    'WEATHER'
 ]
 
 if __name__ == '__main__':
@@ -98,5 +97,5 @@ if __name__ == '__main__':
                     list_table_name=list(filter(lambda x: x != 'PARKING_VIOLATION_ISSUED', LIST_TABLE_NAME)),
                     data_path=config['environment'][environment_name]['data_output_dir'],
                     content_root_path='' if environment_name == 'hpc' else './')
-        print('Press enter to close the cluster...')
-        input('')
+        # print('Press enter to close the cluster...')
+        # input('')
