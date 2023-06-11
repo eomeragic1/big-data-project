@@ -88,7 +88,7 @@ def transform_duckdb(data: pd.DataFrame,
 def transform_dask_regular(data: dd.DataFrame,
                            table_name: str):
     data_nullness = pd.DataFrame(
-        [{col: 100 * (data[col].isnull().sum().compute()) / data.shape[0].compute() for col in data.columns}]
+        [{col: 100 * (data[col].isnull().sum().compute()) / len(data) for col in data.columns}]
     ).T.reset_index()
     data_nullness.columns = ['Column Name', 'Nullness']
     data_nullness['Table Name'] = len(data_nullness) * [table_name]

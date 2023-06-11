@@ -23,47 +23,53 @@ def content_table_health_check():
 
 
 def viz_non_nullness(data: pd.DataFrame) -> Figure:
-    fig = px.bar(data_frame=data.sort_values(by='Non-Nullness [%]', ascending=True),
-                 x='Non-Nullness [%]',
+    fig = px.bar(data_frame=data.sort_values(by='Nullness', ascending=True),
+                 x='Nullness',
                  y='Column Name',
-                 title='Table Completeness')
+                 title='Table Nullness')
     return fig
 
 
 def viz_count_by_date(data: pd.DataFrame) -> Figure:
-    fig = px.bar(data_frame=data.sort_values(by='Memory Usage [MB]', ascending=True),
-                 x='Memory Usage [MB]',
-                 y='Column Name',
-                 title='Table Memory Usage')
+    fig = px.bar(data_frame=data.sort_values(by='Count', ascending=True),
+                 x='Date',
+                 y='Count',
+                 title='Table Count By Date')
     return fig
 
 
 def viz_table_data(data: pd.DataFrame):
-    len_data = format(data.values[0][1], ',')
-    last_date = data.values[0][2].strftime('%Y-%m-%d')
-    unique_rows = round(data.values[0][3], 2)
-    fig = go.Figure(data=[go.Table(header=dict(values=['Table Size', 'Freshness [Last Date]', 'Uniqueness [%]']),
-                                   cells=dict(values=[[len_data], [last_date], [unique_rows]],
-                                              height=30))
-                          ])
-    fig.update_layout(height=250)
-    fig.update_traces(cells_font=dict(size=20))
-    return fig
+    fig_time = px.bar(data_frame=data.sort_values(by='Execution time', ascending=True),
+                 x='Processing mode',
+                 y='Execution time',
+                 color='File mode',
+                 title='Table Execution Time')
+
+    fig_memory = px.bar(data_frame=data.sort_values(by='Execution time', ascending=True),
+                 x='Processing mode',
+                 y='Peak memory usage',
+                 color='File mode',
+                 title='Table Memory Usage')
+    return [
+        dbc.Col(dcc.Graph(figure=fig_memory)),
+        dbc.Col(dcc.Graph(figure=fig_time))
+            ]
 
 
 def _update_output_table_health_check(table_name: str):
     data_table_health = pd.read_parquet(f'data/parquet/PROCESSED_TABLE_METADATA.parquet')
     data_table_health = data_table_health[data_table_health['Table'] == table_name]
 
-    data_column_health = pd.read_parquet(f'data/parquet/PROCESSED_COLUMN_NULLNESS.parquet')
-    data_column_health = data_column_health[data_column_health['Table Name'] == table_name]
+    data_nullness = pd.read_parquet(f'data/parquet/PROCESSED_COLUMN_NULLNESS.parquet')
+    data_nullness = data_nullness[data_nullness['Table Name'] == table_name]
 
     data_count_row_by_date = pd.read_parquet(f'data/parquet/PROCESSED_COUNT_BY_DATE.parquet')
-    data_count_row_by_date = data_count_row_by_date[data_count_row_by_date['Table name'] == table_name]
+    data_count_row_by_date = data_count_row_by_date[data_count_row_by_date['Table Name'] == table_name]
 
     return html.Div(children=[
-        dbc.Row(dcc.Graph(figure=viz_table_data(data=data_table_health))),
+        dbc.Row(children=viz_table_data(data=data_table_health)),
         dbc.Row(children=[
-            dbc.Col(dcc.Graph(figure=viz_non_nullness(data=data_column_health))),
+            dbc.Col(dcc.Graph(figure=viz_non_nullness(data=data_nullness))),
             dbc.Col(dcc.Graph(figure=viz_count_by_date(data=data_count_row_by_date)))
-        ])])
+        ])
+    ])
