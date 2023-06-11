@@ -3,7 +3,7 @@ cluster:
     n_workers: 2
     threads_per_worker: 4
   hpc:
-    memory: 128GB
+    memory: 32GB
     cores: 12
     processes: 4
     jobs: 4
