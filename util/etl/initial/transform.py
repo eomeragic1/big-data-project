@@ -75,7 +75,7 @@ def transform_W(data_W: dd.DataFrame) -> dd.DataFrame:
     transformed_data_W['Date'] = transformed_data_W['Time'].dt.date
     transformed_data_W['Time'] = transformed_data_W['Time'].dt.hour
     transformed_data_W['Date'] = dd.to_datetime(transformed_data_W['Date'], format='%Y-%m-%d')
-    transformed_data_W['Borough'] = transformed_data_W['Borough'].replace('StatenIsland', 'Staten Island')
+    transformed_data_W['Violation County Name'] = transformed_data_W['Borough'].replace('StatenIsland', 'Staten Island')
     return transformed_data_W
 
 

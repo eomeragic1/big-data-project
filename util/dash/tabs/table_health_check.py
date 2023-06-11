@@ -53,13 +53,13 @@ def viz_table_data(data: pd.DataFrame):
 
 def _update_output_table_health_check(table_name: str):
     data_table_health = pd.read_parquet(f'data/parquet/PROCESSED_TABLE_METADATA.parquet')
-    data_table_health = data_table_health[data_table_health['Table Name'] == table_name]
+    data_table_health = data_table_health[data_table_health['Table'] == table_name]
 
     data_column_health = pd.read_parquet(f'data/parquet/PROCESSED_COLUMN_NULLNESS.parquet')
     data_column_health = data_column_health[data_column_health['Table Name'] == table_name]
 
     data_count_row_by_date = pd.read_parquet(f'data/parquet/PROCESSED_COUNT_BY_DATE.parquet')
-    data_count_row_by_date = data_count_row_by_date[data_count_row_by_date['Table Name'] == table_name]
+    data_count_row_by_date = data_count_row_by_date[data_count_row_by_date['Table name'] == table_name]
 
     return html.Div(children=[
         dbc.Row(dcc.Graph(figure=viz_table_data(data=data_table_health))),

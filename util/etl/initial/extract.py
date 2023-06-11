@@ -90,7 +90,7 @@ DATA_METADATA = {
     TABLE_NAME_PERMITTED_EVENTS: {
         'filename': f'{TABLE_NAME_PERMITTED_EVENTS}',
         'dtypes': DTYPES_PERMITTED_EVENTS,
-        'columns': list(DTYPES_PERMITTED_EVENTS.keys()),
+        'columns': list(DTYPES_PERMITTED_EVENTS.keys()  ),
         'default_column': list(DTYPES_PERMITTED_EVENTS.keys())[1],
         'included_columns': INCLUDED_COLUMNS_PERMITTED_EVENTS,
         'identifier_columns': ['Event ID'],

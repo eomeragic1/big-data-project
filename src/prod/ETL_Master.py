@@ -18,9 +18,9 @@ from util.etl.jobs import etl_single_table_transformations, etl_augmentation
 
 LIST_TABLE_NAME = [
     'LEGALLY_OPERATING_BUSINESS',
-    # 'PARKING_VIOLATION_ISSUED',
+    'PARKING_VIOLATION_ISSUED',
     'VIOLATION_COUNTY',
-    # 'PERMITTED_EVENTS',
+    'PERMITTED_EVENTS',
     'SCHOOLS',
     'TRAFFIC',
     'REGISTERED_VEHICLES',
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     arg_data = parser.add_argument("-d", "--data",
                                    type=str,
                                    help=f"Specify dataset to process. If parameter is set to 'All' or not specified, all the possible datasets are processed. Possible values: {', '.join(LIST_TABLE_NAME)}.",
-                                   default='All')
+                                   default='None')
     arg_augmentation = parser.add_argument("-a",
                                            "--augmentation",
                                            help="Run data augmentation.",

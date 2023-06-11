@@ -19,12 +19,12 @@ from util.etl.jobs import etl_test_tools
 
 LIST_TABLE_NAME = [
     'LEGALLY_OPERATING_BUSINESS',
-    # 'PARKING_VIOLATION_ISSUED',
+    'PARKING_VIOLATION_ISSUED',
     'WEATHER',
-    # 'TRAFFIC',
-    # 'SCHOOLS',
+    'TRAFFIC',
+    'SCHOOLS',
     # 'VIOLATION_COUNTY',
-    # 'REGISTERED_VEHICLES',
+    'REGISTERED_VEHICLES',
     # 'PERMITTED_EVENTS'
 ]
 

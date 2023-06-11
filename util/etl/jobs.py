@@ -89,6 +89,7 @@ def etl_test_tools(list_table_name: list,
     for table_name, file_mode, processing_mode in itertools.product(list_table_name,
                                                                     list_file_mode,
                                                                     list_processing_mode):
+        print(f'Starting with combination: ({table_name}, {file_mode}, {processing_mode})')
         data = extract_postprocessing.extract(table_name=table_name,
                                               file_mode=file_mode,
                                               processing_mode=processing_mode,

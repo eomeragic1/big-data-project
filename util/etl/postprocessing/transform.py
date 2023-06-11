@@ -36,6 +36,8 @@ def transform_dask_sql(data: dd.DataFrame,
                             FROM {table_name} 
                             GROUP BY "{DATA_METADATA[table_name]['date_column']}"
                             ''').compute()
+        data_row_count_by_date.columns = ['Date', 'Row count']
+        data_row_count_by_date['Table Name'] = len(data_row_count_by_date) * [table_name]
 
     return {
         'nullness': data_nullness,
@@ -65,12 +67,14 @@ def transform_duckdb(data: pd.DataFrame,
     data_row_count_by_date = None
     # Calculating ROW COUNT BY DATE
     if DATA_METADATA[table_name]['date_column'] is not None:
-        data_row_count_by_date = connection.execute(f'''
+        data_row_count_by_date = pd.DataFrame(connection.execute(f'''
                         SELECT "{DATA_METADATA[table_name]['date_column']}" AS DATE,
                             COUNT(1) AS ROW_COUNT
                         FROM {table_name} 
                         GROUP BY "{DATA_METADATA[table_name]['date_column']}"
-                        ''').fetchall()
+                        ''').fetchall())
+        data_row_count_by_date.columns = ['Date', 'Row count']
+        data_row_count_by_date['Table Name'] = len(data_row_count_by_date) * [table_name]
 
     return {
         'nullness': data_nullness,
@@ -95,6 +99,8 @@ def transform_dask_regular(data: dd.DataFrame,
             .groupby(by=DATA_METADATA[table_name]['date_column'])[DATA_METADATA[table_name]['date_column']] \
             .count() \
             .compute()
+        data_row_count_by_date.columns = ['Date', 'Row count']
+        data_row_count_by_date['Table Name'] = len(data_row_count_by_date) * [table_name]
 
     return {
         'nullness': data_nullness,
