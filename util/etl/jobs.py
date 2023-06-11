@@ -14,6 +14,7 @@ import util.etl.postprocessing.extract as extract_postprocessing
 import util.etl.postprocessing.transform as transform_postprocessing
 from util.custom.common import read_parquet_table
 
+
 def etl_single_table_transformations(list_table_name: list,
                                      config: Box,
                                      environment_name: str):
@@ -120,7 +121,7 @@ def etl_test_tools(list_table_name: list,
 
     data_nullness = pd.concat(results['data_nullness'], axis=0)
     data_row_count_by_date = pd.concat(results['data_row_count_by_date'], axis=0).reset_index()
-    data_row_count_by_date.columns = ['Date', 'Count']
+    data_row_count_by_date.columns = ['Index', 'Date', 'Count', 'Table Name']
     data_metadata = pd.DataFrame(results['data_metadata'])
 
     load_initial.load(data=data_nullness,

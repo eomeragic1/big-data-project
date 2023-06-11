@@ -87,7 +87,7 @@ if __name__ == '__main__':
                     config=config,
                     environment_name=environment_name
                 )
-            else:
+            elif arg_data != 'None':
                 raise argparse.ArgumentError(argument=arg_data,
                                              message='Invalid argument value for data. Add the "-h" option to see argument specifications.')
 

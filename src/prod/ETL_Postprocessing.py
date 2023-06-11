@@ -19,7 +19,7 @@ from util.etl.jobs import etl_test_tools
 
 LIST_TABLE_NAME = [
     'LEGALLY_OPERATING_BUSINESS',
-    'PARKING_VIOLATION_ISSUED',
+    # 'PARKING_VIOLATION_ISSUED',
     'WEATHER',
     'TRAFFIC',
     'SCHOOLS',
